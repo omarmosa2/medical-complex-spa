@@ -1,0 +1,62 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\MedicalRecordController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\MedicalRecordTemplateController;
+use App\Http\Controllers\Doctor\MedicalRecordTemplateController as DoctorMedicalRecordTemplateController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DoctorAvailabilityController;
+use App\Http\Controllers\NotificationController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/theme', [UserController::class, 'updateTheme'])->name('theme.update');
+
+    // Medical Record Templates for Doctors
+    Route::resource('medical-record-templates', MedicalRecordTemplateController::class);
+    Route::resource('patients', PatientController::class);
+    Route::resource('services', ServiceController::class);
+    Route::resource('users', UserController::class);
+    Route::resource('appointments', AppointmentController::class);
+    Route::resource('templates', MedicalRecordTemplateController::class)->parameters([
+        'templates' => 'template'
+    ]);
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::patch('/settings', [SettingsController::class, 'store'])->name('settings.store');
+    Route::resource('clinics', ClinicController::class);
+    Route::resource('availabilities', DoctorAvailabilityController::class)->except(['show']);
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::patch('/notifications', [NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
+});
+
+require __DIR__.'/auth.php';
