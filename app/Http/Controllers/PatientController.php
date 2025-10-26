@@ -44,7 +44,9 @@ class PatientController extends Controller
      */
     public function store(StorePatientRequest $request)
     {
-        $patient = Patient::create($request->validated());
+        $data = $request->validated();
+        $data['file_number'] = 'PAT-' . str_pad(Patient::count() + 1, 6, '0', STR_PAD_LEFT);
+        $patient = Patient::create($data);
 
         ActivityLog::create([
             'user_id' => auth()->id(),

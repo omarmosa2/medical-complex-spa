@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
-import { PageProps, Clinic } from '@/types';
+import { PageProps } from '@/types';
 import Card from '@/Components/Card';
 import { FormEventHandler } from 'react';
 import InputLabel from '@/Components/InputLabel';
@@ -11,19 +11,14 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-interface RevenueData {
-    clinic_name: string;
-    total_revenue: number;
-}
-
-export default function Index({ auth, revenueByClinic, clinics, filters }: PageProps<{ revenueByClinic: RevenueData[], clinics: Clinic[], filters: any }>) {
+export default function Index({ auth, revenueByClinic, clinics, filters }) {
     const { data, setData, get, processing } = useForm({
         start_date: filters.start_date || '',
         end_date: filters.end_date || '',
         clinic_id: filters.clinic_id || '',
     });
 
-    const submit: FormEventHandler = (e) => {
+    const submit = (e) => {
         e.preventDefault();
         get(route('reports.index'));
     };

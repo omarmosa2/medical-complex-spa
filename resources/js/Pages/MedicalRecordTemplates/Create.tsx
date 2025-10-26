@@ -8,7 +8,7 @@ import InputError from '@/Components/InputError';
 import Button from '@/Components/Button';
 import { FormEventHandler } from 'react';
 
-export default function Create({ auth }: PageProps) {
+export default function Create({ auth }: PageProps<{}>) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         content: {
@@ -26,7 +26,7 @@ export default function Create({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create New Template</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create Template</h2>}
         >
             <Head title="Create Template" />
 
@@ -82,7 +82,7 @@ export default function Create({ auth }: PageProps) {
 
                             <div className="flex items-center justify-end mt-6">
                                 <Button className="ms-4" disabled={processing}>
-                                    Save Template
+                                    Create Template
                                 </Button>
                             </div>
                         </form>

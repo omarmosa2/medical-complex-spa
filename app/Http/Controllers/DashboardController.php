@@ -23,7 +23,7 @@ class DashboardController extends Controller
             $data['stats'] = [
                 'patients' => Patient::count(),
                 'doctors' => Doctor::count(),
-                'todaysAppointments' => Appointment::whereDate('date', Carbon::today())->count(),
+                'todaysAppointments' => Appointment::whereDate('appointment_time', Carbon::today())->count(),
                 'pendingAppointments' => Appointment::where('status', 'scheduled')->count(),
                 'totalRevenue' => Payment::sum('amount'),
                 'monthlyRevenue' => Payment::whereMonth('created_at', Carbon::now()->month)->sum('amount'),
@@ -38,19 +38,19 @@ class DashboardController extends Controller
         } elseif ($user->role === 'doctor') {
             $data['todaysAppointments'] = Appointment::with('patient')
                 ->where('doctor_id', $user->doctor->id)
-                ->whereDate('date', Carbon::today())
-                ->orderBy('start_time', 'asc')
+                ->whereDate('appointment_time', Carbon::today())
+                ->orderBy('appointment_time', 'asc')
                 ->get();
             $data['recentPatients'] = Patient::whereHas('appointments', function ($query) use ($user) {
                 $query->where('doctor_id', $user->doctor->id);
             })->latest()->take(5)->get();
         } elseif ($user->role === 'receptionist') {
             $data['todaysAppointments'] = Appointment::with(['patient', 'doctor.user'])
-                ->whereDate('date', Carbon::today())
-                ->orderBy('start_time', 'asc')
+                ->whereDate('appointment_time', Carbon::today())
+                ->orderBy('appointment_time', 'asc')
                 ->get();
             $data['patients'] = Patient::orderBy('name')->get();
-            $data['doctors'] = Doctor::with('user')->orderBy('name')->get();
+            $data['doctors'] = Doctor::with('user')->join('users', 'doctors.user_id', '=', 'users.id')->orderBy('users.name')->select('doctors.*')->get();
         }
 
         return Inertia::render('Dashboard', $data);

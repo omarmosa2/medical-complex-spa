@@ -14,13 +14,27 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
-export default function Index({ auth, appointments, clinics }: PageProps<{ appointments: Appointment[], clinics: Clinic[] }>) {
+export default function Index({ auth, appointments, clinics, patients, doctors, services }: PageProps<{ appointments: Appointment[], clinics: Clinic[], patients: Patient[], doctors: Doctor[], services: Service[] }>) {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
     const [selectedClinic, setSelectedClinic] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const { data, setData, post, processing, errors } = useForm({
+        patient_id: '',
+        doctor_id: '',
+        service_id: '',
+        date: '',
+        start_time: '',
+        end_time: '',
+    });
+
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        post(route('appointments.store'));
+    };
 
     const filteredAppointments = selectedClinic
         ? appointments.filter(app => app.clinic_id === parseInt(selectedClinic))
@@ -80,7 +94,7 @@ export default function Index({ auth, appointments, clinics }: PageProps<{ appoi
                         {appointments.length > 0 ? (
                             <FullCalendar
                                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                                initialState="timeGridWeek"
+                                initialView="timeGridWeek"
                                 headerToolbar={{
                                     left: 'prev,next today',
                                     center: 'title',
@@ -119,7 +133,7 @@ export default function Index({ auth, appointments, clinics }: PageProps<{ appoi
                         <InputLabel htmlFor="patient_id" value="Patient" />
                         <select id="patient_id" name="patient_id" value={data.patient_id} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('patient_id', e.target.value)}>
                             <option value="">Select Patient</option>
-                            {patients.map(patient => (
+                            {patients?.map(patient => (
                                 <option key={patient.id} value={patient.id}>{patient.name}</option>
                             ))}
                         </select>
@@ -130,7 +144,7 @@ export default function Index({ auth, appointments, clinics }: PageProps<{ appoi
                         <InputLabel htmlFor="doctor_id" value="Doctor" />
                         <select id="doctor_id" name="doctor_id" value={data.doctor_id} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('doctor_id', e.target.value)}>
                             <option value="">Select Doctor</option>
-                            {doctors.map(doctor => (
+                            {doctors?.map(doctor => (
                                 <option key={doctor.id} value={doctor.id}>{doctor.user.name}</option>
                             ))}
                         </select>
@@ -141,7 +155,7 @@ export default function Index({ auth, appointments, clinics }: PageProps<{ appoi
                         <InputLabel htmlFor="service_id" value="Service" />
                         <select id="service_id" name="service_id" value={data.service_id} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('service_id', e.target.value)}>
                             <option value="">Select Service</option>
-                            {services.map(service => (
+                            {services?.map(service => (
                                 <option key={service.id} value={service.id}>{service.name}</option>
                             ))}
                         </select>

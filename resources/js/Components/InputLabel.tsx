@@ -3,6 +3,11 @@ export default function InputLabel({
     className = '',
     children,
     ...props
+}: {
+    value?: string;
+    className?: string;
+    children?: React.ReactNode;
+    [key: string]: any;
 }) {
     return (
         <label

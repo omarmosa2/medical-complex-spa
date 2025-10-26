@@ -21,12 +21,16 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
+      * Display a listing of the resource.
+      */
     public function index()
     {
         return Inertia::render('Appointments/Index', [
             'appointments' => Appointment::with(['patient', 'doctor.user', 'service', 'clinic'])->get(),
+            'patients' => Patient::all(),
+            'doctors' => Doctor::with('user')->get(),
+            'services' => Service::all(),
+            'clinics' => \App\Models\Clinic::all(),
         ]);
     }
 

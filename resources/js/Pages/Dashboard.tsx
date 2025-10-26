@@ -1,10 +1,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import Card from '@/Components/Card';
+import Button from '@/Components/Button';
+import InputLabel from '@/Components/InputLabel';
+import InputError from '@/Components/InputError';
+import TextInput from '@/Components/TextInput';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Link } from '@inertiajs/react';
+import { FormEventHandler } from 'react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -197,7 +201,7 @@ export default function Dashboard({ auth, stats, charts, todaysAppointments, rec
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
+            header="Dashboard"
         >
             <Head title="Dashboard" />
 
