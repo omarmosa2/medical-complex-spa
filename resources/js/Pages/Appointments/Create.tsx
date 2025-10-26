@@ -1,20 +1,40 @@
 import Modal from '@/Components/Modal';
 import { useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
-import { Patient, Doctor, Service } from '@/types';
+import { FormEventHandler, useEffect, useState } from 'react';
+import { Patient, Doctor, Service, Clinic } from '@/types';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import Button from '@/Components/Button';
 
-export default function Create({ show, onClose, patients, doctors, services, date }: { show: boolean, onClose: () => void, patients: Patient[], doctors: Doctor[], services: Service[], date: string }) {
+export default function Create({ show, onClose, patients, doctors, services, clinics, date }: { show: boolean, onClose: () => void, patients: Patient[], doctors: Doctor[], services: Service[], clinics: Clinic[], date: string }) {
     const { data, setData, post, processing, errors } = useForm({
         patient_id: '',
         doctor_id: '',
         service_id: '',
         appointment_time: date,
         notes: '',
+        amount_paid: 0,
+        discount: 0,
     });
+    const [netAmount, setNetAmount] = useState(0);
+    const [selectedClinic, setSelectedClinic] = useState<string>('');
+
+    const filteredDoctors = selectedClinic
+        ? doctors.filter(d => d.clinic_id === Number(selectedClinic))
+        : doctors;
+
+    const selectedDoctor = doctors.find(d => d.id === Number(data.doctor_id));
+
+    useEffect(() => {
+        if (selectedDoctor) {
+            const fee = selectedDoctor.examination_fee || 0;
+            const discountAmount = (fee * data.discount) / 100;
+            const finalAmount = fee - discountAmount;
+            setNetAmount(finalAmount);
+            setData('amount_paid', finalAmount);
+        }
+    }, [data.doctor_id, data.discount, doctors]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -46,6 +66,19 @@ export default function Create({ show, onClose, patients, doctors, services, dat
                         <InputError message={errors.patient_id} className="mt-2" />
                     </div>
                     <div>
+                        <InputLabel htmlFor="clinic_id" value="Clinic" />
+                        <select
+                            id="clinic_id"
+                            name="clinic_id"
+                            value={selectedClinic}
+                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            onChange={(e) => setSelectedClinic(e.target.value)}
+                        >
+                            <option value="">Select a clinic</option>
+                            {clinics.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                    </div>
+                    <div>
                         <InputLabel htmlFor="doctor_id" value="Doctor" />
                         <select
                             id="doctor_id"
@@ -53,9 +86,10 @@ export default function Create({ show, onClose, patients, doctors, services, dat
                             value={data.doctor_id}
                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             onChange={(e) => setData('doctor_id', e.target.value)}
+                            disabled={!selectedClinic}
                         >
                             <option value="">Select a doctor</option>
-                            {doctors.map(d => <option key={d.id} value={d.id}>{d.user.name}</option>)}
+                            {filteredDoctors.map(d => <option key={d.id} value={d.id}>{d.user.name}</option>)}
                         </select>
                         <InputError message={errors.doctor_id} className="mt-2" />
                     </div>

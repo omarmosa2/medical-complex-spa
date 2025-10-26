@@ -39,22 +39,25 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        DB::transaction(function () use ($request) {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => $request->role,
-            ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:'.User::class,
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => 'required|string|in:admin,doctor,receptionist',
+            'examination_fee' => 'nullable|numeric|min:0',
+            'doctor_percentage' => 'nullable|numeric|min:0|max:100',
+        ]);
 
-            if ($request->role === 'doctor') {
-                $user->doctor()->create([
-                    'specialization' => $request->specialization,
-                ]);
-            }
-        });
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'examination_fee' => $request->examination_fee,
+            'doctor_percentage' => $request->doctor_percentage,
+        ]);
 
         return redirect()->route('users.index');
     }
@@ -81,23 +84,28 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
-        DB::transaction(function () use ($request, $user) {
-            $user->update($request->only('name', 'email', 'role'));
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:'.User::class.'->ignore($user->id)',
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'role' => 'required|string|in:admin,doctor,receptionist',
+            'examination_fee' => 'nullable|numeric|min:0',
+            'doctor_percentage' => 'nullable|numeric|min:0|max:100',
+        ]);
 
-            if ($request->filled('password')) {
-                $user->update(['password' => Hash::make($request->password)]);
-            }
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'examination_fee' => $request->examination_fee,
+            'doctor_percentage' => $request->doctor_percentage,
+        ]);
 
-            if ($request->role === 'doctor') {
-                $user->doctor()->updateOrCreate([], [
-                    'specialization' => $request->specialization,
-                ]);
-            } else {
-                $user->doctor?->delete();
-            }
-        });
+        if ($request->password) {
+            $user->update(['password' => Hash::make($request->password)]);
+        }
 
         return redirect()->route('users.index');
     }

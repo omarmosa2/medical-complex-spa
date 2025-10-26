@@ -20,10 +20,14 @@ import {
     DocumentDuplicateIcon,
     BuildingOffice2Icon,
     CalendarDaysIcon,
+    CreditCardIcon,
+    ArrowRightOnRectangleIcon,
+    UserCircleIcon,
+    Bars3Icon,
 } from '@heroicons/react/24/outline';
 
 export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: React.ReactNode }>) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const { props: { auth } } = usePage<{ auth: { user: User } }>();
     const theme = auth.user.theme;
 
@@ -35,118 +39,152 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         }
     }, [theme]);
 
-    return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <div className="h-16 flex items-center justify-center border-b">
-                    <Link href="/">
-                        <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                    </Link>
-                </div>
-                <nav className="mt-5 flex-1 px-2 space-y-1">
-                    <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                        <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                        Dashboard
+    const SidebarContent = () => (
+        <>
+            <div className="h-20 flex items-center justify-center flex-shrink-0 px-4 bg-gray-900">
+                <Link href="/">
+                    <ApplicationLogo className="block h-12 w-auto" />
+                </Link>
+            </div>
+            <nav className="mt-5 flex-1 px-4 space-y-2">
+                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                    <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                    Dashboard
+                </NavLink>
+                <NavLink href={route('patients.index')} active={route().current('patients.index')}>
+                    <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                    Patients
+                </NavLink>
+                <NavLink href={route('appointments.index')} active={route().current('appointments.index')}>
+                    <CalendarIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                    Appointments
+                </NavLink>
+                {(auth.user.role === 'admin' || auth.user.role === 'receptionist') && (
+                    <NavLink href={route('payments.index')} active={route().current('payments.index')}>
+                        <CreditCardIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                        Payments
                     </NavLink>
-                    <NavLink href={route('patients.index')} active={route().current('patients.index')}>
-                        <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                        Patients
-                    </NavLink>
-                    <NavLink href={route('appointments.index')} active={route().current('appointments.index')}>
-                        <CalendarIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                        Appointments
-                    </NavLink>
-                    {auth.user.role === 'admin' && (
-                        <>
-                            <NavLink href={route('users.index')} active={route().current('users.index')}>
-                                <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                                Users
-                            </NavLink>
-                            <NavLink href={route('services.index')} active={route().current('services.index')}>
-                                <ClipboardDocumentListIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                                Services
-                            </NavLink>
-                            <NavLink href={route('medical-record-templates.index')} active={route().current('medical-record-templates.index')}>
-                                <DocumentDuplicateIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                                Record Templates
-                            </NavLink>
-                            <NavLink href={route('reports.index')} active={route().current('reports.index')}>
-                                <ChartBarIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                                Reports
-                            </NavLink>
-                            <NavLink href={route('clinics.index')} active={route().current('clinics.index')}>
-                                <BuildingOffice2Icon className="mr-3 flex-shrink-0 h-6 w-6" />
-                                Clinics
-                            </NavLink>
-                            <NavLink href={route('settings.index')} active={route().current('settings.index')}>
-                                <Cog6ToothIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                                Settings
-                            </NavLink>
-                        </>
-                    )}
-                    {auth.user.role === 'doctor' && (
+                )}
+                {auth.user.role === 'admin' && (
+                    <>
+                        <div className="pt-4 pb-2 px-2">
+                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</h3>
+                        </div>
+                        <NavLink href={route('users.index')} active={route().current('users.index')}>
+                            <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Users
+                        </NavLink>
+                        <NavLink href={route('services.index')} active={route().current('services.index')}>
+                            <ClipboardDocumentListIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Services
+                        </NavLink>
+                        <NavLink href={route('medical-record-templates.index')} active={route().current('medical-record-templates.index')}>
+                            <DocumentDuplicateIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Record Templates
+                        </NavLink>
+                        <NavLink href={route('reports.index')} active={route().current('reports.index')}>
+                            <ChartBarIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Reports
+                        </NavLink>
+                        <NavLink href={route('clinics.index')} active={route().current('clinics.index')}>
+                            <BuildingOffice2Icon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Clinics
+                        </NavLink>
+                        <NavLink href={route('settings.index')} active={route().current('settings.index')}>
+                            <Cog6ToothIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Settings
+                        </NavLink>
+                    </>
+                )}
+                {auth.user.role === 'doctor' && (
+                     <>
+                        <div className="pt-4 pb-2 px-2">
+                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Doctor's Area</h3>
+                        </div>
                         <NavLink href={route('availabilities.index')} active={route().current('availabilities.index')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-6 w-6" />
                             My Availability
                         </NavLink>
-                    )}
-                </nav>
+                    </>
+                )}
+            </nav>
+        </>
+    );
+
+
+    return (
+        <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+            {/* Static sidebar for desktop */}
+            <aside className="hidden md:flex md:flex-shrink-0">
+                <div className="flex flex-col w-64">
+                    <div className="flex flex-col h-0 flex-1 bg-gray-800 dark:bg-gray-900">
+                        <SidebarContent />
+                    </div>
+                </div>
             </aside>
 
-            <div className="flex-1 flex flex-col">
+            <div className="flex flex-col w-0 flex-1 overflow-hidden">
                 {/* Top Header */}
-                <header className="bg-white shadow-sm">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between h-16">
-                            <div className="flex items-center">
-                                {header && (
-                                    <div className="font-semibold text-xl text-gray-800 leading-tight">{header}</div>
-                                )}
-                            </div>
-
-                            <div className="hidden sm:flex sm:items-center sm:ms-6">
-                                <ThemeSwitcher />
-                                <div className="ms-3 relative">
-                                    <Dropdown>
-                                        <Dropdown.Trigger>
-                                            <span className="inline-flex rounded-md">
-                                                <button
-                                                    type="button"
-                                                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                <header className="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 shadow">
+                    <button
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        className="px-4 border-r border-gray-200 dark:border-gray-700 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+                    >
+                        <span className="sr-only">Open sidebar</span>
+                        <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                    </button>
+                    <div className="flex-1 px-4 flex justify-between">
+                        <div className="flex-1 flex items-center">
+                            {header && (
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{header}</h1>
+                            )}
+                        </div>
+                        <div className="ml-4 flex items-center md:ml-6">
+                            <ThemeSwitcher />
+                            {/* Profile dropdown */}
+                            <div className="ms-3 relative">
+                                <Dropdown>
+                                    <Dropdown.Trigger>
+                                        <span className="inline-flex rounded-md">
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-300 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-100 focus:outline-none transition ease-in-out duration-150"
+                                            >
+                                                {user.name}
+                                                <svg
+                                                    className="ms-2 -me-0.5 h-4 w-4"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
                                                 >
-                                                    {user.name}
-                                                    <svg
-                                                        className="ms-2 -me-0.5 h-4 w-4"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </span>
-                                        </Dropdown.Trigger>
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </Dropdown.Trigger>
 
-                                        <Dropdown.Content>
-                                            <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                            <Dropdown.Link href={route('logout')} method="post" as="button">
-                                                Log Out
-                                            </Dropdown.Link>
-                                        </Dropdown.Content>
-                                    </Dropdown>
-                                </div>
+                                    <Dropdown.Content>
+                                        <Dropdown.Link href={route('profile.edit')}>
+                                            <UserCircleIcon className="mr-2 h-5 w-5"/>
+                                            Profile
+                                        </Dropdown.Link>
+                                        <Dropdown.Link href={route('logout')} method="post" as="button">
+                                            <ArrowRightOnRectangleIcon className="mr-2 h-5 w-5"/>
+                                            Log Out
+                                        </Dropdown.Link>
+                                    </Dropdown.Content>
+                                </Dropdown>
                             </div>
                         </div>
                     </div>
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1 overflow-y-auto p-6">
+                <main className="flex-1 relative overflow-y-auto focus:outline-none p-6">
                     {children}
                 </main>
             </div>

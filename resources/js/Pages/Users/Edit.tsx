@@ -85,21 +85,58 @@ export default function Edit({ auth, user }: PageProps<{ user: User }>) {
                                     />
                                     <InputError message={errors.password_confirmation} className="mt-2" />
                                 </div>
-                                <div>
+                                <div className="mt-4">
                                     <InputLabel htmlFor="role" value="Role" />
+
                                     <select
                                         id="role"
                                         name="role"
                                         value={data.role}
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        onChange={(e) => setData('role', e.target.value as 'admin' | 'doctor' | 'receptionist')}
+                                        className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                        onChange={(e) => setData('role', e.target.value)}
                                     >
                                         <option value="admin">Admin</option>
                                         <option value="doctor">Doctor</option>
                                         <option value="receptionist">Receptionist</option>
                                     </select>
+
                                     <InputError message={errors.role} className="mt-2" />
                                 </div>
+
+                                {data.role === 'doctor' && (
+                                    <>
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="examination_fee" value="Examination Fee" />
+
+                                            <TextInput
+                                                id="examination_fee"
+                                                type="number"
+                                                name="examination_fee"
+                                                value={data.examination_fee}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setData('examination_fee', e.target.value)}
+                                            />
+
+                                            <InputError message={errors.examination_fee} className="mt-2" />
+                                        </div>
+
+                                        <div className="mt-4">
+                                            <InputLabel htmlFor="doctor_percentage" value="Doctor Percentage (%)" />
+
+                                            <TextInput
+                                                id="doctor_percentage"
+                                                type="number"
+                                                name="doctor_percentage"
+                                                value={data.doctor_percentage}
+                                                className="mt-1 block w-full"
+                                                onChange={(e) => setData('doctor_percentage', e.target.value)}
+                                            />
+
+                                            <InputError message={errors.doctor_percentage} className="mt-2" />
+                                        </div>
+                                    </>
+                                )}
+
                                 {data.role === 'doctor' && (
                                     <div>
                                         <InputLabel htmlFor="specialization" value="Specialization" />
@@ -116,7 +153,7 @@ export default function Edit({ auth, user }: PageProps<{ user: User }>) {
                                 )}
                             </div>
 
-                            <div className="flex items-center justify-end mt-6">
+                            <div className="flex items-center justify-end mt-4">
                                 <Button className="ms-4" disabled={processing}>
                                     Update User
                                 </Button>

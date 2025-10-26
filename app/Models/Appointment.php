@@ -9,7 +9,18 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'patient_id',
+        'doctor_id',
+        'service_id',
+        'clinic_id',
+        'receptionist_id',
+        'appointment_date',
+        'notes',
+        'status',
+        'amount_paid',
+        'discount',
+    ];
 
     public function patient()
     {

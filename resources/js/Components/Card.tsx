@@ -1,9 +1,18 @@
-import { ReactNode } from 'react';
+import React from 'react';
 
-export default function Card({ children, className = '' }: { children: React.ReactNode, className?: string }) {
+interface CardProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
+const Card: React.FC<CardProps> = ({ children, className }) => {
     return (
-        <div className={`bg-white dark:bg-gray-800 overflow-hidden shadow-md sm:rounded-xl p-6 ${className}`}>
+        <div
+            className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6 ${className}`}
+        >
             {children}
         </div>
     );
-}
+};
+
+export default Card;
