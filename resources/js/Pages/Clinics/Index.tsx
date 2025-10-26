@@ -1,11 +1,11 @@
-import { PageProps, Paginated } from '@/types';
+import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
 import Button from '@/Components/Button';
 import { PlusIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline';
 
-export default function Index({ auth, clinics }: PageProps<{ clinics: Paginated<any> }>) {
+export default function Index({ auth, clinics }: PageProps<{ clinics: any[] }>) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -38,8 +38,8 @@ export default function Index({ auth, clinics }: PageProps<{ clinics: Paginated<
                                 </tr>
                             </thead>
                             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                {clinics.data.length > 0 ? (
-                                    clinics.data.map((clinic) => (
+                                {clinics.length > 0 ? (
+                                    clinics.map((clinic) => (
                                         <tr key={clinic.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{clinic.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

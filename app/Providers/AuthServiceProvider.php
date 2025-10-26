@@ -14,6 +14,10 @@ use App\Models\Setting;
 use App\Policies\SettingPolicy;
 use App\Models\MedicalRecordTemplate;
 use App\Policies\MedicalRecordTemplatePolicy;
+use App\Models\Payment;
+use App\Policies\PaymentPolicy;
+use App\Models\Clinic;
+use App\Policies\ClinicPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +35,8 @@ class AuthServiceProvider extends ServiceProvider
         Appointment::class => AppointmentPolicy::class,
         Setting::class => SettingPolicy::class,
         MedicalRecordTemplate::class => MedicalRecordTemplatePolicy::class,
+        Payment::class => PaymentPolicy::class,
+        Clinic::class => ClinicPolicy::class,
     ];
 
     /**

@@ -46,9 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('services', ServiceController::class);
     Route::resource('users', UserController::class);
     Route::resource('appointments', AppointmentController::class);
-    Route::resource('templates', MedicalRecordTemplateController::class)->parameters([
-        'templates' => 'template'
-    ]);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings', [SettingsController::class, 'store'])->name('settings.store');

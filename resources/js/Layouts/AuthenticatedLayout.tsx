@@ -3,7 +3,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, Page } from '@inertiajs/react';
 import { User } from '@/types';
 import NotificationDropdown from '@/Components/NotificationDropdown';
 import ThemeToggle from '@/Components/ThemeToggle';
@@ -24,8 +24,8 @@ import {
 
 export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: React.ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const { props } = usePage();
-    const theme = props.auth.user.theme;
+    const { props: { auth } } = usePage<{ auth: { user: User } }>();
+    const theme = auth.user.theme;
 
     useEffect(() => {
         if (theme === 'dark') {
@@ -67,7 +67,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <ClipboardDocumentListIcon className="mr-3 flex-shrink-0 h-6 w-6" />
                                 Services
                             </NavLink>
-                            <NavLink href={route('templates.index')} active={route().current('templates.index')}>
+                            <NavLink href={route('medical-record-templates.index')} active={route().current('medical-record-templates.index')}>
                                 <DocumentDuplicateIcon className="mr-3 flex-shrink-0 h-6 w-6" />
                                 Record Templates
                             </NavLink>
@@ -101,7 +101,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="flex justify-between h-16">
                             <div className="flex items-center">
                                 {header && (
-                                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">{header}</h2>
+                                    <div className="font-semibold text-xl text-gray-800 leading-tight">{header}</div>
                                 )}
                             </div>
 

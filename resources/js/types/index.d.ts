@@ -4,6 +4,7 @@ export type User = {
     email: string;
     email_verified_at: string;
     role: 'admin' | 'doctor' | 'receptionist';
+    theme: 'light' | 'dark';
 };
 
 export type Patient = {
@@ -30,6 +31,12 @@ export type Service = {
     description: string | null;
     price: number;
     duration_minutes: number;
+};
+
+export type Clinic = {
+    id: number;
+    name: string;
+    description: string | null;
 };
 
 export type Appointment = {
@@ -64,3 +71,13 @@ export type PaginatedResponse<T> = {
         total: number;
     };
 };
+
+export type PageProps<T> = T & {
+    auth: {
+        user: User;
+    };
+};
+
+declare global {
+    function route(name: string, parameters?: any): string;
+}

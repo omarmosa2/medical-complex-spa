@@ -49,7 +49,10 @@ export default function Index({ auth, templates }: PageProps<{ templates: Templa
                                             {template.title}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <Link href={route('medical-record-templates.edit', template.id)} className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">
+                                            <Link href={route('medical-record-templates.show', template.id)} className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">
+                                                View
+                                            </Link>
+                                            <Link href={route('medical-record-templates.edit', template.id)} className="ml-4 text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">
                                                 Edit
                                             </Link>
                                         </td>
