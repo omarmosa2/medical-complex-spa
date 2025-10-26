@@ -2,10 +2,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import Card from '@/Components/Card';
-import { Transaction } from '@/types';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 
-export default function Index({ auth, totalRevenue, totalAppointments, totalPatients, transactions }: PageProps<{ totalRevenue: number, totalAppointments: number, totalPatients: number, transactions: Transaction[] }>) {
+export default function Index({ auth, totalRevenue, totalAppointments, totalPatients, transactions }: PageProps<{ totalRevenue: number, totalAppointments: number, totalPatients: number, transactions: any[] }>) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -18,7 +18,7 @@ export default function Index({ auth, totalRevenue, totalAppointments, totalPati
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Card>
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Total Revenue</h3>
-                            <p className="mt-1 text-3xl font-semibold text-indigo-600">${totalRevenue.toFixed(2)}</p>
+                            <p className="mt-1 text-3xl font-semibold text-indigo-600">${Number(totalRevenue).toFixed(2)}</p>
                         </Card>
                         <Card>
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Total Appointments</h3>
@@ -34,7 +34,7 @@ export default function Index({ auth, totalRevenue, totalAppointments, totalPati
                         <Card>
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Transactions</h3>
-                                <div class="flex space-x-2">
+                                <div className="flex space-x-2">
                                     <a href={route('reports.export')}>
                                         <PrimaryButton>Export to Excel</PrimaryButton>
                                     </a>
@@ -58,7 +58,7 @@ export default function Index({ auth, totalRevenue, totalAppointments, totalPati
                                         <tr key={transaction.id}>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{transaction.user.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{transaction.type}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${transaction.amount.toFixed(2)}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${Number(transaction.amount).toFixed(2)}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{transaction.description}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{new Date(transaction.created_at).toLocaleDateString()}</td>
                                         </tr>

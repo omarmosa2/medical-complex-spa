@@ -18,6 +18,8 @@ use App\Models\Payment;
 use App\Policies\PaymentPolicy;
 use App\Models\Clinic;
 use App\Policies\ClinicPolicy;
+use App\Models\Doctor;
+use App\Policies\DoctorPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         MedicalRecordTemplate::class => MedicalRecordTemplatePolicy::class,
         Payment::class => PaymentPolicy::class,
         Clinic::class => ClinicPolicy::class,
+        Doctor::class => DoctorPolicy::class,
     ];
 
     /**

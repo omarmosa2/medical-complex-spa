@@ -19,6 +19,7 @@ use App\Http\Controllers\Doctor\MedicalRecordTemplateController as DoctorMedical
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorAvailabilityController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,9 +33,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -55,7 +54,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings', [SettingsController::class, 'store'])->name('settings.store');
     Route::resource('clinics', ClinicController::class);
+    Route::resource('payments', PaymentController::class);
     Route::resource('availabilities', DoctorAvailabilityController::class)->except(['show']);
+    Route::resource('doctors', DoctorController::class);
+    Route::get('/doctor/agenda', [DoctorController::class, 'agenda'])->name('doctor.agenda');
+    Route::get('/doctor/tool', [DoctorController::class, 'tool'])->name('doctor.tool');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::patch('/notifications', [NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');

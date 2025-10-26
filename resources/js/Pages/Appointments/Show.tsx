@@ -27,6 +27,12 @@ export default function Show({ auth, appointment, templates }: PageProps<{ appoi
         diagnosis: '',
         prescription: '',
         notes: '',
+        vitals: {
+            height: '',
+            weight: '',
+            bp: '',
+            temperature: '',
+        },
     });
 
     const submit: FormEventHandler = (e) => {

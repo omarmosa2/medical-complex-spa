@@ -9,7 +9,14 @@ class Doctor extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'name',
+        'clinic_id',
+        'specialization',
+        'payment_percentage',
+        'bio',
+    ];
 
     /**
      * Get the user that owns the doctor profile.
@@ -22,5 +29,10 @@ class Doctor extends Model
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

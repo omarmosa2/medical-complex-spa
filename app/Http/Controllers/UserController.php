@@ -21,10 +21,22 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = User::query();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('role', 'like', '%' . $search . '%');
+            });
+        }
+
         return Inertia::render('Users/Index', [
-            'users' => User::with('doctor')->paginate(10),
+            'users' => $query->with('doctor')->paginate(10),
+            'search' => $request->search,
         ]);
     }
 
@@ -33,7 +45,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('Users/Create', [
+            'doctors' => \App\Models\Doctor::whereNull('user_id')->get(),
+        ]);
     }
 
     /**
@@ -48,6 +62,7 @@ class UserController extends Controller
             'role' => 'required|string|in:admin,doctor,receptionist',
             'examination_fee' => 'nullable|numeric|min:0',
             'doctor_percentage' => 'nullable|numeric|min:0|max:100',
+            'doctor_id' => 'nullable|exists:doctors,id',
         ]);
 
         $user = User::create([
@@ -58,6 +73,11 @@ class UserController extends Controller
             'examination_fee' => $request->examination_fee,
             'doctor_percentage' => $request->doctor_percentage,
         ]);
+
+        if ($request->role === 'doctor' && $request->doctor_id) {
+            $doctor = \App\Models\Doctor::find($request->doctor_id);
+            $doctor->update(['user_id' => $user->id]);
+        }
 
         return redirect()->route('users.index');
     }

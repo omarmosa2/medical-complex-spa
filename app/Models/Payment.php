@@ -11,8 +11,17 @@ class Payment extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'amount' => 'decimal:2',
+    ];
+
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
     }
 }

@@ -90,6 +90,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             <BuildingOffice2Icon className="mr-3 flex-shrink-0 h-6 w-6" />
                             Clinics
                         </NavLink>
+                        <NavLink href={route('doctors.index')} active={route().current('doctors.index')}>
+                            <UserCircleIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Doctors
+                        </NavLink>
                         <NavLink href={route('settings.index')} active={route().current('settings.index')}>
                             <Cog6ToothIcon className="mr-3 flex-shrink-0 h-6 w-6" />
                             Settings
@@ -101,6 +105,14 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="pt-4 pb-2 px-2">
                             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Doctor's Area</h3>
                         </div>
+                        <NavLink href={route('doctor.tool')} active={route().current('doctor.tool')}>
+                            <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            Doctor's Tool
+                        </NavLink>
+                        <NavLink href={route('doctor.agenda')} active={route().current('doctor.agenda')}>
+                            <CalendarDaysIcon className="mr-3 flex-shrink-0 h-6 w-6" />
+                            My Agenda
+                        </NavLink>
                         <NavLink href={route('availabilities.index')} active={route().current('availabilities.index')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-6 w-6" />
                             My Availability
@@ -136,7 +148,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     <div className="flex-1 px-4 flex justify-between">
                         <div className="flex-1 flex items-center">
                             {header && (
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{header}</h1>
+                                <div className="text-2xl font-bold text-gray-900 dark:text-white">{header}</div>
                             )}
                         </div>
                         <div className="ml-4 flex items-center md:ml-6">

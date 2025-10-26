@@ -12,16 +12,17 @@ export default function Create({ show, onClose, patients, doctors, services, cli
         patient_id: '',
         doctor_id: '',
         service_id: '',
+        clinic_id: '',
         appointment_time: date,
+        status: 'scheduled',
         notes: '',
         amount_paid: 0,
         discount: 0,
     });
     const [netAmount, setNetAmount] = useState(0);
-    const [selectedClinic, setSelectedClinic] = useState<string>('');
 
-    const filteredDoctors = selectedClinic
-        ? doctors.filter(d => d.clinic_id === Number(selectedClinic))
+    const filteredDoctors = data.clinic_id
+        ? doctors.filter(d => d.clinic_id === Number(data.clinic_id))
         : doctors;
 
     const selectedDoctor = doctors.find(d => d.id === Number(data.doctor_id));
@@ -70,13 +71,14 @@ export default function Create({ show, onClose, patients, doctors, services, cli
                         <select
                             id="clinic_id"
                             name="clinic_id"
-                            value={selectedClinic}
+                            value={data.clinic_id}
                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                            onChange={(e) => setSelectedClinic(e.target.value)}
+                            onChange={(e) => setData('clinic_id', e.target.value)}
                         >
                             <option value="">Select a clinic</option>
                             {clinics.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
+                        <InputError message={errors.clinic_id} className="mt-2" />
                     </div>
                     <div>
                         <InputLabel htmlFor="doctor_id" value="Doctor" />
@@ -86,7 +88,7 @@ export default function Create({ show, onClose, patients, doctors, services, cli
                             value={data.doctor_id}
                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             onChange={(e) => setData('doctor_id', e.target.value)}
-                            disabled={!selectedClinic}
+                            disabled={!data.clinic_id}
                         >
                             <option value="">Select a doctor</option>
                             {filteredDoctors.map(d => <option key={d.id} value={d.id}>{d.user.name}</option>)}
@@ -131,10 +133,53 @@ export default function Create({ show, onClose, patients, doctors, services, cli
                         />
                         <InputError message={errors.notes} className="mt-2" />
                     </div>
+                    <div>
+                        <InputLabel htmlFor="status" value="Status" />
+                        <select
+                            id="status"
+                            name="status"
+                            value={data.status}
+                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            onChange={(e) => setData('status', e.target.value)}
+                        >
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="no_show">No Show</option>
+                        </select>
+                        <InputError message={errors.status} className="mt-2" />
+                    </div>
+                    <div>
+                        <InputLabel htmlFor="discount" value="Discount (%)" />
+                        <TextInput
+                            id="discount"
+                            type="number"
+                            name="discount"
+                            value={data.discount}
+                            className="mt-1 block w-full"
+                            onChange={(e) => setData('discount', parseFloat(e.target.value) || 0)}
+                            min="0"
+                            max="100"
+                        />
+                        <InputError message={errors.discount} className="mt-2" />
+                    </div>
+                    <div>
+                        <InputLabel htmlFor="amount_paid" value="Amount Paid" />
+                        <TextInput
+                            id="amount_paid"
+                            type="number"
+                            name="amount_paid"
+                            value={data.amount_paid}
+                            className="mt-1 block w-full"
+                            onChange={(e) => setData('amount_paid', parseFloat(e.target.value) || 0)}
+                            min="0"
+                        />
+                        <InputError message={errors.amount_paid} className="mt-2" />
+                    </div>
                 </div>
 
                 <div className="mt-6 flex justify-end">
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button className="bg-gray-200 hover:bg-gray-300 text-gray-800" onClick={onClose}>
                         Cancel
                     </Button>
 

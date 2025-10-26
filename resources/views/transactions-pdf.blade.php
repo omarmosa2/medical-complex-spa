@@ -1,11 +1,11 @@
-&lt;!DOCTYPE html&gt;
-&lt;html lang=\"ar\" dir=\"rtl\"&gt;
-&lt;head&gt;
-    &lt;meta charset=\"UTF-8\"&gt;
-    &lt;title&gt;تقرير المعاملات&lt;/title&gt;
-    &lt;style&gt;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Transactions Report</title>
+    <style>
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: Arial, sans-serif;
         }
         table {
             width: 100%;
@@ -14,36 +14,38 @@
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: right;
+            text-align: left;
         }
         th {
             background-color: #f2f2f2;
         }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;تقرير المعاملات&lt;/h1&gt;
-    &lt;table&gt;
-        &lt;thead&gt;
-            &lt;tr&gt;
-                &lt;th&gt;المستخدم&lt;/th&gt;
-                &lt;th&gt;النوع&lt;/th&gt;
-                &lt;th&gt;المبلغ&lt;/th&gt;
-                &lt;th&gt;الوصف&lt;/th&gt;
-                &lt;th&gt;التاريخ&lt;/th&gt;
-            &lt;/tr&gt;
-        &lt;/thead&gt;
-        &lt;tbody&gt;
-            @foreach ($transactions as $transaction)
-                &lt;tr&gt;
-                    &lt;td&gt;{{ $transaction-&gt;user-&gt;name }}&lt;/td&gt;
-                    &lt;td&gt;{{ $transaction-&gt;type }}&lt;/td&gt;
-                    &lt;td&gt;${{ number_format($transaction-&gt;amount, 2) }}&lt;/td&gt;
-                    &lt;td&gt;{{ $transaction-&gt;description }}&lt;/td&gt;
-                    &lt;td&gt;{{ $transaction-&gt;created_at-&gt;format('Y-m-d') }}&lt;/td&gt;
-                &lt;/tr&gt;
+    </style>
+</head>
+<body>
+    <h1>Transactions Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Transaction ID</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($transactions as $transaction)
+                <tr>
+                    <td>{{ $transaction->id }}</td>
+                    <td>{{ $transaction->user->name }}</td>
+                    <td>${{ number_format($transaction->amount, 2) }}</td>
+                    <td>{{ $transaction->payment_method }}</td>
+                    <td>{{ $transaction->transaction_id ?: 'N/A' }}</td>
+                    <td>{{ $transaction->created_at->format('Y-m-d') }}</td>
+                </tr>
             @endforeach
-        &lt;/tbody&gt;
-    &lt;/table&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+        </tbody>
+    </table>
+</body>
+</html>

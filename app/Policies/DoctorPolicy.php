@@ -2,26 +2,26 @@
 
 namespace App\Policies;
 
-use App\Models\Payment;
+use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class PaymentPolicy
+class DoctorPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Payment $payment): bool
+    public function view(User $user, Doctor $doctor): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
@@ -29,21 +29,21 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Payment $payment): bool
+    public function update(User $user, Doctor $doctor): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Payment $payment): bool
+    public function delete(User $user, Doctor $doctor): bool
     {
         return $user->role === 'admin';
     }
@@ -51,7 +51,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Payment $payment): bool
+    public function restore(User $user, Doctor $doctor): bool
     {
         return $user->role === 'admin';
     }
@@ -59,7 +59,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Payment $payment): bool
+    public function forceDelete(User $user, Doctor $doctor): bool
     {
         return $user->role === 'admin';
     }

@@ -8,7 +8,7 @@ import InputError from '@/Components/InputError';
 import Button from '@/Components/Button';
 import { FormEventHandler } from 'react';
 
-export default function Create({ auth }: PageProps) {
+export default function Create({ auth, doctors }: PageProps<{ doctors: any[] }>) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
@@ -16,6 +16,7 @@ export default function Create({ auth }: PageProps) {
         password_confirmation: '',
         role: 'receptionist',
         specialization: '',
+        doctor_id: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -106,51 +107,21 @@ export default function Create({ auth }: PageProps) {
                                 </div>
 
                                 {data.role === 'doctor' && (
-                                    <>
-                                        <div className="mt-4">
-                                            <InputLabel htmlFor="examination_fee" value="Examination Fee" />
-
-                                            <TextInput
-                                                id="examination_fee"
-                                                type="number"
-                                                name="examination_fee"
-                                                value={data.examination_fee}
-                                                className="mt-1 block w-full"
-                                                onChange={(e) => setData('examination_fee', e.target.value)}
-                                            />
-
-                                            <InputError message={errors.examination_fee} className="mt-2" />
-                                        </div>
-
-                                        <div className="mt-4">
-                                            <InputLabel htmlFor="doctor_percentage" value="Doctor Percentage (%)" />
-
-                                            <TextInput
-                                                id="doctor_percentage"
-                                                type="number"
-                                                name="doctor_percentage"
-                                                value={data.doctor_percentage}
-                                                className="mt-1 block w-full"
-                                                onChange={(e) => setData('doctor_percentage', e.target.value)}
-                                            />
-
-                                            <InputError message={errors.doctor_percentage} className="mt-2" />
-                                        </div>
-                                    </>
-                                )}
-
-                                {data.role === 'doctor' && (
                                     <div>
-                                        <InputLabel htmlFor="specialization" value="Specialization" />
-                                        <TextInput
-                                            id="specialization"
-                                            name="specialization"
-                                            value={data.specialization}
-                                            className="mt-1 block w-full"
-                                            onChange={(e) => setData('specialization', e.target.value)}
-                                            required
-                                        />
-                                        <InputError message={errors.specialization} className="mt-2" />
+                                        <InputLabel htmlFor="doctor_id" value="Assign to Doctor" />
+                                        <select
+                                            id="doctor_id"
+                                            name="doctor_id"
+                                            value={data.doctor_id}
+                                            className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                            onChange={(e) => setData('doctor_id', e.target.value)}
+                                        >
+                                            <option value="">Select Doctor</option>
+                                            {doctors.map((doctor) => (
+                                                <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+                                            ))}
+                                        </select>
+                                        <InputError message={errors.doctor_id} className="mt-2" />
                                     </div>
                                 )}
                             </div>

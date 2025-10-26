@@ -15,14 +15,19 @@ export type Patient = {
     date_of_birth: string;
     gender: 'male' | 'female';
     address: string | null;
+    medical_records?: MedicalRecord[];
 };
 
 export type Doctor = {
     id: number;
-    user_id: number;
+    user_id: number | null;
+    name: string | null;
+    clinic_id: number | null;
     specialization: string;
+    payment_percentage: number;
     bio: string | null;
-    user: User;
+    user?: User;
+    clinic?: Clinic;
 };
 
 export type Service = {
@@ -44,13 +49,17 @@ export type Appointment = {
     patient_id: number;
     doctor_id: number;
     service_id: number;
+    clinic_id: number | null;
     receptionist_id: number | null;
     appointment_time: string;
     status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
     notes: string | null;
+    amount_paid: number;
+    discount: number | null;
     patient: Patient;
     doctor: Doctor;
     service: Service;
+    clinic?: Clinic;
 };
 
 export type PaginatedResponse<T> = {

@@ -44,8 +44,9 @@ class AppointmentController extends Controller
     {
         return Inertia::render('Appointments/Create', [
             'patients' => Patient::all(),
-            'doctors' => Doctor::with('user')->get(),
+            'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
+            'clinics' => \App\Models\Clinic::all(),
         ]);
     }
 
@@ -57,9 +58,10 @@ class AppointmentController extends Controller
         $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
             'patient_id' => 'required|exists:patients,id',
-            'appointment_date' => 'required|date',
-            'appointment_time' => 'required',
-            'status' => 'required|string|in:scheduled,completed,cancelled',
+            'service_id' => 'required|exists:services,id',
+            'clinic_id' => 'nullable|exists:clinics,id',
+            'appointment_time' => 'required|date',
+            'status' => 'required|string|in:scheduled,completed,cancelled,no_show',
             'notes' => 'nullable|string',
             'amount_paid' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0|max:100',
@@ -115,7 +117,7 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
-        $appointment->load(['patient.medicalRecords.doctor.user', 'doctor.user', 'service']);
+        $appointment->load(['patient.medicalRecords.doctor.user', 'doctor.user', 'service', 'clinic']);
 
         return Inertia::render('Appointments/Show', [
             'appointment' => $appointment,
@@ -131,8 +133,9 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Edit', [
             'appointment' => $appointment->load(['patient', 'doctor.user', 'service']),
             'patients' => Patient::all(),
-            'doctors' => Doctor::with('user')->get(),
+            'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
+            'clinics' => \App\Models\Clinic::all(),
         ]);
     }
 
