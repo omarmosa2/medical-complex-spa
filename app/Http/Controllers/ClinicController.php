@@ -15,8 +15,13 @@ class ClinicController extends Controller
     {
          $this->authorize('viewAny', Clinic::class);
          $clinics = Clinic::all();
+         $stats = [
+             'total_clinics' => Clinic::count(),
+             'active_clinics' => Clinic::count(), // Assuming all clinics are active for now
+         ];
          return Inertia::render('Clinics/Index', [
-             'clinics' => $clinics
+             'clinics' => $clinics,
+             'stats' => $stats
          ]);
     }
 
@@ -37,6 +42,9 @@ class ClinicController extends Controller
          $this->authorize('create', Clinic::class);
          $validated = $request->validate([
              'name' => 'required|string|max:255',
+             'location' => 'nullable|string|max:255',
+             'working_days' => 'nullable|string',
+             'notes' => 'nullable|string',
              'description' => 'nullable|string',
          ]);
 
@@ -75,6 +83,9 @@ class ClinicController extends Controller
          $this->authorize('update', $clinic);
          $validated = $request->validate([
              'name' => 'required|string|max:255',
+             'location' => 'nullable|string|max:255',
+             'working_days' => 'nullable|string',
+             'notes' => 'nullable|string',
              'description' => 'nullable|string',
          ]);
 

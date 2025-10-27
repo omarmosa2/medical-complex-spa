@@ -1,11 +1,21 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
 import Button from '@/Components/Button';
-import { PlusIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline';
+import TextInput from '@/Components/TextInput';
+import { PlusIcon, BuildingOffice2Icon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-export default function Index({ auth, clinics }: PageProps<{ clinics: any[] }>) {
+export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any[], stats: any }>) {
+    const [search, setSearch] = useState('');
+    const [filteredClinics, setFilteredClinics] = useState(clinics);
+
+    const handleSearch = (query: string) => {
+        setSearch(query);
+        setFilteredClinics(clinics.filter(clinic => clinic.name.toLowerCase().includes(query.toLowerCase())));
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -25,6 +35,46 @@ export default function Index({ auth, clinics }: PageProps<{ clinics: any[] }>) 
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
+                        <Card>
+                            <div className="p-6">
+                                <div className="flex items-center">
+                                    <div className="p-2 bg-blue-500 rounded-lg">
+                                        <BuildingOffice2Icon className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <p className="text-sm font-medium text-gray-500">Total Clinics</p>
+                                        <p className="text-2xl font-semibold text-gray-900">{stats.total_clinics}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card>
+                            <div className="p-6">
+                                <div className="flex items-center">
+                                    <div className="p-2 bg-green-500 rounded-lg">
+                                        <BuildingOffice2Icon className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <p className="text-sm font-medium text-gray-500">Active Clinics</p>
+                                        <p className="text-2xl font-semibold text-gray-900">{stats.active_clinics}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Search and Filter */}
+                    <div className="mb-6">
+                        <TextInput
+                            placeholder="Search clinics..."
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            className="max-w-md"
+                        />
+                    </div>
+
                     <Card>
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead className="bg-gray-50 dark:bg-gray-700">
@@ -32,26 +82,46 @@ export default function Index({ auth, clinics }: PageProps<{ clinics: any[] }>) 
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Name
                                     </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Location
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Working Days
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Notes
+                                    </th>
                                     <th scope="col" className="relative px-6 py-3">
-                                        <span className="sr-only">Edit</span>
+                                        <span className="sr-only">Actions</span>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                {clinics.length > 0 ? (
-                                    clinics.map((clinic) => (
+                                {filteredClinics.length > 0 ? (
+                                    filteredClinics.map((clinic) => (
                                         <tr key={clinic.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{clinic.name}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{clinic.location}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{clinic.working_days}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{clinic.notes}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <Link href={route('clinics.edit', clinic.id)} className="text-indigo-600 hover:text-indigo-900 font-semibold">
-                                                    Edit
-                                                </Link>
+                                                <div className="flex space-x-2">
+                                                    <Link href={route('clinics.show', clinic.id)} className="text-blue-600 hover:text-blue-900">
+                                                        <EyeIcon className="h-5 w-5" />
+                                                    </Link>
+                                                    <Link href={route('clinics.edit', clinic.id)} className="text-indigo-600 hover:text-indigo-900">
+                                                        <PencilIcon className="h-5 w-5" />
+                                                    </Link>
+                                                    <Link href={route('clinics.destroy', clinic.id)} method="delete" as="button" className="text-red-600 hover:text-red-900">
+                                                        <TrashIcon className="h-5 w-5" />
+                                                    </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={2} className="text-center py-12">
+                                        <td colSpan={5} className="text-center py-12">
                                             <BuildingOffice2Icon className="mx-auto h-12 w-12 text-gray-400" />
                                             <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No clinics found</h3>
                                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new clinic.</p>
