@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html dir="rtl">
 <head>
     <meta charset="utf-8">
-    <title>Transactions Report</title>
+    <title>تقرير المعاملات</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans Arabic', sans-serif;
+            text-align: right;
         }
         table {
             width: 100%;
@@ -14,7 +15,7 @@
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: left;
+            text-align: right;
         }
         th {
             background-color: #f2f2f2;
@@ -22,16 +23,16 @@
     </style>
 </head>
 <body>
-    <h1>Transactions Report</h1>
+    <h1>تقرير المعاملات</h1>
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-                <th>Transaction ID</th>
-                <th>Date</th>
+                <th>الرقم</th>
+                <th>المستخدم</th>
+                <th>المبلغ</th>
+                <th>طريقة الدفع</th>
+                <th>رقم المعاملة</th>
+                <th>التاريخ</th>
             </tr>
         </thead>
         <tbody>

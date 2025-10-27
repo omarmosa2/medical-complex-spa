@@ -49,7 +49,7 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
 
     const events = filteredAppointments.map(app => ({
         id: app.id.toString(),
-        title: `${app.patient.name} - ${app.service.name}`,
+        title: `${app.patient?.name || 'Unknown'} - ${app.service?.name || 'Unknown'}`,
         start: app.appointment_time,
         extendedProps: {
             clinic: app.clinic?.name,
@@ -82,7 +82,6 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header={
                 <div className="flex justify-between items-center">
                     <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Appointments</h2>
@@ -152,7 +151,7 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                         <select id="doctor_id" name="doctor_id" value={data.doctor_id} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('doctor_id', e.target.value)}>
                             <option value="">Select Doctor</option>
                             {doctors?.map(doctor => (
-                                <option key={doctor.id} value={doctor.id}>{doctor.user.name}</option>
+                                <option key={doctor.id} value={doctor.id}>{doctor.user?.name}</option>
                             ))}
                         </select>
                         <InputError message={errors.doctor_id} className="mt-2" />
@@ -185,7 +184,7 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                         <select id="doctor_id" name="doctor_id" value={data.doctor_id} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('doctor_id', e.target.value)} disabled={!data.clinic_id}>
                             <option value="">Select Doctor</option>
                             {filteredDoctors?.map(doctor => (
-                                <option key={doctor.id} value={doctor.id}>{doctor.user.name}</option>
+                                <option key={doctor.id} value={doctor.id}>{doctor.user?.name}</option>
                             ))}
                         </select>
                         <InputError message={errors.doctor_id} className="mt-2" />

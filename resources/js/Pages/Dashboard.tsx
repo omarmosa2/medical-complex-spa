@@ -51,13 +51,13 @@ const AdminDashboard = ({ stats }: { stats: any }) => {
     return (
         <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <StatCard title="Total Patients" value={stats.patients} />
-                <StatCard title="Total Doctors" value={stats.doctors} />
-                <StatCard title="Today's Appointments" value={stats.todaysAppointments} />
-                <StatCard title="Pending Appointments" value={stats.pendingAppointments} />
+                <StatCard title="إجمالي المرضى" value={stats.patients} />
+                <StatCard title="إجمالي الأطباء" value={stats.doctors} />
+                <StatCard title="حجوزات اليوم" value={stats.todaysAppointments} />
+                <StatCard title="حجوزات معلقة" value={stats.pendingAppointments} />
             </div>
             <Card>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Statistics Overview</h3>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">إحصائيات عامة</h3>
                 <Bar data={chartData} />
             </Card>
         </div>
