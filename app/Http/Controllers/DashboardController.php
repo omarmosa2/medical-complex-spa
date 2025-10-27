@@ -35,6 +35,11 @@ class DashboardController extends Controller
                     ->orderBy('date', 'asc')
                     ->get(),
             ];
+            $data['todaysAppointments'] = Appointment::with(['patient', 'doctor.user', 'service'])
+                ->whereDate('appointment_time', Carbon::today())
+                ->orderBy('appointment_time', 'asc')
+                ->get();
+            $data['recentPatients'] = Patient::latest()->take(5)->get();
         } elseif ($user->role === 'doctor') {
             $data['todaysAppointments'] = Appointment::with('patient')
                 ->where('doctor_id', $user->doctor->id)

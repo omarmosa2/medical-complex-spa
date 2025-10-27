@@ -24,7 +24,6 @@ export default function Create({ auth, clinics }: PageProps<{ clinics: Clinic[] 
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Add New Doctor</h2>}
         >
             <Head title="Add Doctor" />

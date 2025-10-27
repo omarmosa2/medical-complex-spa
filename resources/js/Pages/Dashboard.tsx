@@ -6,10 +6,10 @@ import Button from '@/Components/Button';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import TextInput from '@/Components/TextInput';
-import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import { FormEventHandler } from 'react';
-
+import { motion } from 'framer-motion';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface StatCardProps {
@@ -26,7 +26,7 @@ const StatCard = ({ title, value }: StatCardProps) => (
 
 const AdminDashboard = ({ stats }: { stats: any }) => {
     const chartData = {
-        labels: ['Patients', 'Doctors', 'Today\'s App.', 'Pending App.'],
+        labels: ['المرضى', 'الأطباء', 'اليوم', 'معلقة'],
         datasets: [
             {
                 label: 'Count',
@@ -49,18 +49,51 @@ const AdminDashboard = ({ stats }: { stats: any }) => {
     };
 
     return (
-        <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <StatCard title="إجمالي المرضى" value={stats.patients} />
-                <StatCard title="إجمالي الأطباء" value={stats.doctors} />
-                <StatCard title="حجوزات اليوم" value={stats.todaysAppointments} />
-                <StatCard title="حجوزات معلقة" value={stats.pendingAppointments} />
-            </div>
-            <Card>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">إحصائيات عامة</h3>
-                <Bar data={chartData} />
+           <div className="p-6 space-y-8">
+      {/* الإحصائيات المختصرة */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { title: "إجمالي المرضى", value: stats.patients },
+          { title: "إجمالي الأطباء", value: stats.doctors },
+          { title: "حجوزات اليوم", value: stats.todaysAppointments },
+          { title: "حجوزات معلقة", value: stats.pendingAppointments },
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Card className="bg-gradient-to-br from-indigo-500/10 via-sky-500/5 to-transparent dark:from-indigo-400/10 dark:to-transparent border border-indigo-500/20 shadow-lg hover:shadow-indigo-500/20 transition-all duration-300">
+              <div className="p-5 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">{item.title}</p>
+                <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">
+                  {item.value}
+                </p>
+              </div>
             </Card>
-        </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* إحصائيات عامة */}
+      <motion.div
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-300">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-3">
+              إحصائيات عامة
+            </h3>
+            <div className="w-full">
+              <Bar data={chartData} />
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+    </div>
     );
 };
 
@@ -200,7 +233,6 @@ export default function Dashboard({ auth, stats, charts, todaysAppointments, rec
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header="Dashboard"
         >
             <Head title="Dashboard" />
