@@ -34,14 +34,14 @@ const StatCard = ({ title, value, icon: Icon }: StatCardProps) => (
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full md:w-1/4"
+        className="w-full"
     >
-        <Card className="bg-gradient-to-br from-indigo-500/10 via-sky-500/5 to-transparent dark:from-indigo-400/10 dark:to-transparent border border-indigo-500/20 shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 p-6">
+        <Card className="bg-gradient-to-br from-primary-50 via-primary-100/20 to-transparent dark:from-primary-900/20 dark:to-transparent border border-primary-200 dark:border-primary-700 shadow-xl hover:shadow-primary-500/20 transition-all duration-300 p-6 rounded-xl">
             <div className="flex items-center justify-between">
                 <div className="text-center flex-1">
-                    <Icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-2" />
+                    <Icon className="w-8 h-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-                    <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">
+                    <p className="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-2">
                         {value}
                     </p>
                 </div>
@@ -50,7 +50,7 @@ const StatCard = ({ title, value, icon: Icon }: StatCardProps) => (
     </motion.div>
 );
 
-const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, charts: any, recentNotifications: Notification[] }) => {
+const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: any, stats: any, charts: any, recentNotifications: Notification[] }) => {
     // Bar chart for overview
     const barChartData = {
         labels: ['المرضى', 'الأطباء', 'حجوزات اليوم', 'حجوزات معلقة'],
@@ -59,18 +59,18 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
                 label: 'العدد',
                 data: [stats.patients, stats.doctors, stats.todaysAppointments, stats.pendingAppointments],
                 backgroundColor: [
-                    'rgba(52, 152, 219, 0.6)',
-                    'rgba(46, 204, 113, 0.6)',
-                    'rgba(241, 196, 15, 0.6)',
-                    'rgba(231, 76, 60, 0.6)',
+                    '#3498DB', // primary-500
+                    '#5DADE2', // primary-400
+                    '#85C1E9', // primary-300
+                    '#AED6F1', // primary-200
                 ],
                 borderColor: [
-                    'rgba(52, 152, 219, 1)',
-                    'rgba(46, 204, 113, 1)',
-                    'rgba(241, 196, 15, 1)',
-                    'rgba(231, 76, 60, 1)',
+                    '#2E86C1', // primary-600
+                    '#2874A6', // primary-700
+                    '#21618C', // primary-800
+                    '#1B4F72', // primary-900
                 ],
-                borderWidth: 1,
+                borderWidth: 2,
             },
         ],
     };
@@ -82,8 +82,8 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
             {
                 label: 'تسجيل المرضى',
                 data: charts.patientGrowth.map((item: any) => item.count),
-                borderColor: 'rgba(52, 152, 219, 1)',
-                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                borderColor: '#3498DB', // primary-500
+                backgroundColor: 'rgba(52, 152, 219, 0.2)', // primary-500 with opacity
                 tension: 0.4,
             },
         ],
@@ -96,8 +96,8 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
             {
                 label: 'حجوزات يومية',
                 data: charts.appointmentTrends.map((item: any) => item.count),
-                borderColor: 'rgba(46, 204, 113, 1)',
-                backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                borderColor: '#5DADE2', // primary-400
+                backgroundColor: 'rgba(93, 173, 226, 0.2)', // primary-400 with opacity
                 tension: 0.4,
             },
         ],
@@ -110,12 +110,20 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
             {
                 data: charts.serviceDistribution.map((item: any) => item.count),
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 205, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
+                    '#3498DB', // primary-500
+                    '#5DADE2', // primary-400
+                    '#85C1E9', // primary-300
+                    '#AED6F1', // primary-200
+                    '#D6EAF8', // primary-100
                 ],
+                borderColor: [
+                    '#2E86C1', // primary-600
+                    '#2874A6', // primary-700
+                    '#21618C', // primary-800
+                    '#1B4F72', // primary-900
+                    '#153E59', // primary-950
+                ],
+                borderWidth: 2,
             },
         ],
     };
@@ -194,15 +202,24 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
     };
 
     return (
-        <div className="p-6 space-y-8" dir="rtl">
+        <div className="p-8 space-y-10 bg-gray-50 dark:bg-gray-900 min-h-screen" dir="rtl">
             {/* Header */}
-            <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">لوحة التحكم الإدارية</h2>
-                <p className="text-gray-600 dark:text-gray-400">نظرة عامة على إحصائيات النظام</p>
+            <div className="mb-10 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">لوحة التحكم الإدارية</h2>
+                        <p className="text-gray-600 dark:text-gray-400 text-lg">مرحباً {auth.user.name}، إليك نظرة عامة على إحصائيات النظام والأداء</p>
+                    </div>
+                    <div className="mt-4 md:mt-0">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {new Date().toLocaleDateString('ar', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                 {[
                     { title: "إجمالي المرضى", value: stats.patients, icon: UserGroupIcon },
                     { title: "إجمالي الأطباء", value: stats.doctors, icon: UserIcon },
@@ -246,7 +263,7 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
                     </div>
                 </Card>
 
-                <Card className="border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-300">
+                <Card className="border border-gray-200 dark:border-gray-700 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl p-6">
                     <div className="p-6">
                         <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center">
                             <ChartBarIcon className="w-5 h-5 mr-2" />
@@ -287,9 +304,9 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
                         </h3>
                         <div className="space-y-3">
                             {recentNotifications.length > 0 ? recentNotifications.map(notification => (
-                                <div key={notification.id} className="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                                <div key={notification.id} className="p-3 bg-primary-50 dark:bg-primary-900 rounded-lg">
                                     <div className="flex items-start">
-                                        <ExclamationTriangleIcon className={`w-5 h-5 mr-3 mt-0.5 ${notification.type === 'error' ? 'text-red-500' : notification.type === 'warning' ? 'text-yellow-500' : 'text-blue-500'}`} />
+                                        <ExclamationTriangleIcon className={`w-5 h-5 mr-3 mt-0.5 ${notification.type === 'error' ? 'text-red-500' : notification.type === 'warning' ? 'text-yellow-500' : 'text-primary-500'}`} />
                                         <div>
                                             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{notification.title}</p>
                                             <p className="text-xs text-gray-600 dark:text-gray-400">{notification.message}</p>
@@ -312,29 +329,29 @@ const AdminDashboard = ({ stats, charts, recentNotifications }: { stats: any, ch
                         <div className="space-y-4">
                             <Link
                                 href={route('patients.index')}
-                                className="block p-3 bg-indigo-50 dark:bg-indigo-900 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-800 transition-colors"
+                                className="block p-3 bg-primary-50 dark:bg-primary-900 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors"
                             >
                                 <div className="flex items-center">
-                                    <UserIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mr-3" />
-                                    <span className="text-indigo-600 dark:text-indigo-400 font-medium">إدارة المرضى</span>
+                                    <UserIcon className="w-5 h-5 text-primary-600 dark:text-primary-400 mr-3" />
+                                    <span className="text-primary-600 dark:text-primary-400 font-medium">إدارة المرضى</span>
                                 </div>
                             </Link>
                             <Link
                                 href={route('appointments.index')}
-                                className="block p-3 bg-green-50 dark:bg-green-900 rounded-lg hover:bg-green-100 dark:hover:bg-green-800 transition-colors"
+                                className="block p-3 bg-primary-100 dark:bg-primary-800 rounded-lg hover:bg-primary-200 dark:hover:bg-primary-700 transition-colors"
                             >
                                 <div className="flex items-center">
-                                    <CalendarDaysIcon className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
-                                    <span className="text-green-600 dark:text-green-400 font-medium">إدارة الحجوزات</span>
+                                    <CalendarDaysIcon className="w-5 h-5 text-primary-500 dark:text-primary-300 mr-3" />
+                                    <span className="text-primary-500 dark:text-primary-300 font-medium">إدارة الحجوزات</span>
                                 </div>
                             </Link>
                             <Link
                                 href={route('reports.index')}
-                                className="block p-3 bg-yellow-50 dark:bg-yellow-900 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-800 transition-colors"
+                                className="block p-3 bg-primary-200 dark:bg-primary-700 rounded-lg hover:bg-primary-300 dark:hover:bg-primary-600 transition-colors"
                             >
                                 <div className="flex items-center">
-                                    <ChartBarIcon className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-3" />
-                                    <span className="text-yellow-600 dark:text-yellow-400 font-medium">عرض التقارير</span>
+                                    <ChartBarIcon className="w-5 h-5 text-primary-700 dark:text-primary-500 mr-3" />
+                                    <span className="text-primary-700 dark:text-primary-500 font-medium">عرض التقارير</span>
                                 </div>
                             </Link>
                             <Link
@@ -485,7 +502,7 @@ export default function Dashboard({ auth, stats, charts, todaysAppointments, rec
     const renderDashboard = () => {
         switch (auth.user.role) {
             case 'admin':
-                return <AdminDashboard stats={stats} charts={charts} recentNotifications={recentNotifications} />;
+                return <AdminDashboard auth={auth} stats={stats} charts={charts} recentNotifications={recentNotifications} />;
             case 'doctor':
                 return <DoctorDashboard todaysAppointments={todaysAppointments} recentPatients={recentPatients} />;
             case 'receptionist':

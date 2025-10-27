@@ -19,15 +19,57 @@ class PatientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Patient::query();
+
+        // Handle search
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('file_number', 'like', "%{$search}%");
+            });
+        }
+
+        // Handle filters
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('name', $request->name);
+        }
+        if ($request->has('phone') && !empty($request->phone)) {
+            $query->where('phone', $request->phone);
+        }
+        if ($request->has('file_number') && !empty($request->file_number)) {
+            $query->where('file_number', $request->file_number);
+        }
+
+        $patients = $query->paginate(10)->through(fn ($patient) => [
+            'id' => $patient->id,
+            'name' => $patient->name,
+            'phone' => $patient->phone,
+            'file_number' => $patient->file_number,
+        ]);
+
+        // Calculate stats
+        $stats = [
+            'total_patients' => Patient::count(),
+            'patients_with_appointments' => Patient::has('appointments')->count(),
+            'recent_patients' => Patient::whereDate('created_at', '>=', now()->subDays(30))->count(),
+        ];
+
+        // Filter options
+        $filterOptions = [
+            'names' => Patient::distinct()->pluck('name')->filter()->values(),
+            'phones' => Patient::distinct()->pluck('phone')->filter()->values(),
+            'file_numbers' => Patient::distinct()->pluck('file_number')->filter()->values(),
+        ];
+
         return Inertia::render('Patients/Index', [
-            'patients' => Patient::paginate(10)->through(fn ($patient) => [
-                'id' => $patient->id,
-                'name' => $patient->name,
-                'phone' => $patient->phone,
-                'file_number' => $patient->file_number,
-            ]),
+            'patients' => $patients,
+            'stats' => $stats,
+            'filters' => $request->only(['search', 'name', 'phone', 'file_number']), // Pass current filters back
+            'filterOptions' => $filterOptions,
         ]);
     }
 
