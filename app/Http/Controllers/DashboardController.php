@@ -7,6 +7,8 @@ use App\Models\Patient;
 use App\Models\Doctor;
 use App\Models\Appointment;
 use App\Models\Payment;
+use App\Models\Notification as NotificationModel;
+use App\Models\Service;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +36,23 @@ class DashboardController extends Controller
                     ->groupBy('date')
                     ->orderBy('date', 'asc')
                     ->get(),
+                'appointmentTrends' => Appointment::select(DB::raw('DATE(appointment_time) as date'), DB::raw('count(*) as count'))
+                    ->where('appointment_time', '>=', Carbon::now()->subDays(30))
+                    ->groupBy('date')
+                    ->orderBy('date', 'asc')
+                    ->get(),
+                'serviceDistribution' => Appointment::with('service')
+                    ->select('service_id', DB::raw('count(*) as count'))
+                    ->groupBy('service_id')
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'service' => $item->service->name,
+                            'count' => $item->count,
+                        ];
+                    }),
             ];
+            $data['recentNotifications'] = NotificationModel::latest()->take(5)->get();
             $data['todaysAppointments'] = Appointment::with(['patient', 'doctor.user', 'service'])
                 ->whereDate('appointment_time', Carbon::today())
                 ->orderBy('appointment_time', 'asc')

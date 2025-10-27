@@ -62,6 +62,15 @@ export type Appointment = {
     clinic?: Clinic;
 };
 
+export type Notification = {
+    id: number;
+    title: string;
+    message: string;
+    type: 'info' | 'warning' | 'error' | 'success';
+    read_at: string | null;
+    created_at: string;
+};
+
 export type PaginatedResponse<T> = {
     data: T[];
     links: {
