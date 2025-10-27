@@ -21,17 +21,17 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
             user={auth.user}
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Clinics</h2>
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">العيادات</h2>
                     <Link href={route('clinics.create')}>
                         <Button>
                             <PlusIcon className="h-5 w-5 mr-2" />
-                            Add Clinic
+                            إضافة عيادة
                         </Button>
                     </Link>
                 </div>
             }
         >
-            <Head title="Clinics" />
+            <Head title="العيادات" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -44,7 +44,7 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
                                         <BuildingOffice2Icon className="h-6 w-6 text-white" />
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500">Total Clinics</p>
+                                        <p className="text-sm font-medium text-gray-500">إجمالي العيادات</p>
                                         <p className="text-2xl font-semibold text-gray-900">{stats.total_clinics}</p>
                                     </div>
                                 </div>
@@ -57,7 +57,7 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
                                         <BuildingOffice2Icon className="h-6 w-6 text-white" />
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500">Active Clinics</p>
+                                        <p className="text-sm font-medium text-gray-500">العيادات النشطة</p>
                                         <p className="text-2xl font-semibold text-gray-900">{stats.active_clinics}</p>
                                     </div>
                                 </div>
@@ -68,7 +68,7 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
                     {/* Search and Filter */}
                     <div className="mb-6">
                         <TextInput
-                            placeholder="Search clinics..."
+                            placeholder="البحث في العيادات..."
                             value={search}
                             onChange={(e) => handleSearch(e.target.value)}
                             className="max-w-md"
@@ -80,19 +80,19 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
                             <thead className="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Name
+                                        الاسم
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Location
+                                        الموقع
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Working Days
+                                        أيام العمل
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Notes
+                                        الملاحظات
                                     </th>
                                     <th scope="col" className="relative px-6 py-3">
-                                        <span className="sr-only">Actions</span>
+                                        <span className="sr-only">الإجراءات</span>
                                     </th>
                                 </tr>
                             </thead>
@@ -102,7 +102,18 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
                                         <tr key={clinic.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{clinic.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{clinic.location}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{clinic.working_days}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                                {clinic.schedules && clinic.schedules.length > 0 ? (
+                                                    clinic.schedules.map(schedule => (
+                                                        <div key={schedule.day_of_week} className="mb-1">
+                                                            {['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'][schedule.day_of_week - 1]}:
+                                                            {schedule.is_active ? `${schedule.start_time} - ${schedule.end_time}` : 'عطلة'}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    'غير محدد'
+                                                )}
+                                            </td>
                                             <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{clinic.notes}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <div className="flex space-x-2">
@@ -123,13 +134,13 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
                                     <tr>
                                         <td colSpan={5} className="text-center py-12">
                                             <BuildingOffice2Icon className="mx-auto h-12 w-12 text-gray-400" />
-                                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No clinics found</h3>
-                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new clinic.</p>
+                                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">لم يتم العثور على عيادات</h3>
+                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">ابدأ بإنشاء عيادة جديدة.</p>
                                             <div className="mt-6">
                                                 <Link href={route('clinics.create')}>
                                                     <Button>
                                                         <PlusIcon className="h-5 w-5 mr-2" />
-                                                        Add Clinic
+                                                        إضافة عيادة
                                                     </Button>
                                                 </Link>
                                             </div>

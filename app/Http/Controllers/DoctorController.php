@@ -37,9 +37,15 @@ class DoctorController extends Controller
             });
         }
 
+        $stats = [
+            'total_doctors' => Doctor::count(),
+            'active_doctors' => Doctor::count(), // Assuming all are active
+        ];
+
         return Inertia::render('Doctor/Index', [
             'doctors' => $query->with(['user', 'clinic'])->paginate(10),
             'search' => $request->search,
+            'stats' => $stats,
         ]);
     }
 

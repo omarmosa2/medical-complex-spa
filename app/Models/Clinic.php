@@ -9,7 +9,7 @@ class Clinic extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'location', 'notes', 'description'];
 
     public function doctors()
     {
@@ -19,5 +19,10 @@ class Clinic extends Model
     public function services()
     {
         return $this->belongsToMany(Service::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(ClinicSchedule::class);
     }
 }

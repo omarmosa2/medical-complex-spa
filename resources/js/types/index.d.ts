@@ -74,12 +74,11 @@ export type Notification = {
 
 export type PaginatedResponse<T> = {
     data: T[];
-    links: {
-        first: string;
-        last: string;
-        prev: string | null;
-        next: string | null;
-    };
+    links: Array<{
+        url: string | null;
+        label: string;
+        active: boolean;
+    }>;
     meta: {
         current_page: number;
         from: number;
