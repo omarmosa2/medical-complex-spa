@@ -62,11 +62,17 @@ class UserController extends Controller
             'role' => 'required|string|in:admin,doctor,receptionist',
             'examination_fee' => 'nullable|numeric|min:0',
             'doctor_percentage' => 'nullable|numeric|min:0|max:100',
-            'doctor_id' => 'nullable|exists:doctors,id',
+            'doctor_id' => $request->role === 'doctor' ? 'required|exists:doctors,id' : 'nullable',
         ]);
 
+        $name = $request->name;
+        if ($request->role === 'doctor' && $request->doctor_id) {
+            $doctor = \App\Models\Doctor::find($request->doctor_id);
+            $name = $doctor->name;
+        }
+
         $user = User::create([
-            'name' => $request->name,
+            'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,

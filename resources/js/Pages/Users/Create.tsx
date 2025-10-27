@@ -36,19 +36,44 @@ export default function Create({ auth, doctors }: PageProps<{ doctors: any[] }>)
                     <Card>
                         <form onSubmit={submit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <InputLabel htmlFor="name" value="Name" />
-                                    <TextInput
-                                        id="name"
-                                        name="name"
-                                        value={data.name}
-                                        className="mt-1 block w-full"
-                                        isFocused={true}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        required
-                                    />
-                                    <InputError message={errors.name} className="mt-2" />
-                                </div>
+                                {data.role !== 'doctor' ? (
+                                    <div>
+                                        <InputLabel htmlFor="name" value="Name" />
+                                        <TextInput
+                                            id="name"
+                                            name="name"
+                                            value={data.name}
+                                            className="mt-1 block w-full"
+                                            isFocused={true}
+                                            onChange={(e) => setData('name', e.target.value)}
+                                            required
+                                        />
+                                        <InputError message={errors.name} className="mt-2" />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <InputLabel htmlFor="doctor_id" value="Select Doctor" />
+                                        <select
+                                            id="doctor_id"
+                                            name="doctor_id"
+                                            value={data.doctor_id}
+                                            className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                            onChange={(e) => {
+                                                setData('doctor_id', e.target.value);
+                                                // Also set name to the selected doctor's name
+                                                const selectedDoctor = doctors.find(d => d.id == e.target.value);
+                                                setData('name', selectedDoctor ? selectedDoctor.name : '');
+                                            }}
+                                            required
+                                        >
+                                            <option value="">Select Doctor</option>
+                                            {doctors.map((doctor) => (
+                                                <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+                                            ))}
+                                        </select>
+                                        <InputError message={errors.doctor_id} className="mt-2" />
+                                    </div>
+                                )}
                                 <div>
                                     <InputLabel htmlFor="email" value="Email" />
                                     <TextInput
@@ -106,24 +131,6 @@ export default function Create({ auth, doctors }: PageProps<{ doctors: any[] }>)
                                     <InputError message={errors.role} className="mt-2" />
                                 </div>
 
-                                {data.role === 'doctor' && (
-                                    <div>
-                                        <InputLabel htmlFor="doctor_id" value="Assign to Doctor" />
-                                        <select
-                                            id="doctor_id"
-                                            name="doctor_id"
-                                            value={data.doctor_id}
-                                            className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                                            onChange={(e) => setData('doctor_id', e.target.value)}
-                                        >
-                                            <option value="">Select Doctor</option>
-                                            {doctors.map((doctor) => (
-                                                <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
-                                            ))}
-                                        </select>
-                                        <InputError message={errors.doctor_id} className="mt-2" />
-                                    </div>
-                                )}
                             </div>
 
                             <div className="flex items-center justify-end mt-4">
