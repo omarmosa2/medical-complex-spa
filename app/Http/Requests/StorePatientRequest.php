@@ -22,11 +22,13 @@ class StorePatientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:patients,phone',
-            'date_of_birth' => 'required|date|before:today',
+            'full_name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'address' => 'nullable|string',
+            'age' => 'required|integer|min:1|max:150',
+            'residence' => 'required|string|max:255',
+            'phone' => 'nullable|string|unique:patients,phone',
+            'email' => 'nullable|email|unique:patients,email',
+            'notes' => 'nullable|string',
         ];
     }
 }

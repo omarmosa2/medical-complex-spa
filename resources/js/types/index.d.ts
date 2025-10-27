@@ -9,12 +9,13 @@ export type User = {
 
 export type Patient = {
     id: number;
-    file_number: string;
-    name: string;
-    phone: string;
-    date_of_birth: string;
+    full_name: string;
     gender: 'male' | 'female';
-    address: string | null;
+    age: number;
+    residence: string;
+    phone: string | null;
+    email: string | null;
+    notes: string | null;
     medical_records?: MedicalRecord[];
 };
 

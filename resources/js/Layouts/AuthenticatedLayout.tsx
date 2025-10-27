@@ -41,12 +41,12 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
 
     const SidebarContent = () => (
         <>
-            <div className="h-20 flex items-center justify-center flex-shrink-0 px-4 bg-gray-900">
-                <Link href="/">
+            <div className="h-20 flex items-center justify-center flex-shrink-0 px-4 bg-slate-800 border-b border-teal-500">
+                <Link href="/" className="hover:opacity-80 transition-opacity">
                     <ApplicationLogo className="block h-12 w-auto" />
                 </Link>
             </div>
-            <nav className="mt-5 flex-1 px-4 space-y-2">
+            <nav className="mt-5 flex-1 px-4 space-y-3">
                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                     <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
                     لوحة التحكم
@@ -67,8 +67,8 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                 )}
                 {auth.user.role === 'admin' && (
                     <>
-                        <div className="pt-4 pb-2 px-2">
-                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">الإدارة</h3>
+                        <div className="pt-6 pb-3 px-3">
+                            <h3 className="text-xs font-semibold text-teal-300 uppercase tracking-wider">الإدارة</h3>
                         </div>
                         <NavLink href={route('users.index')} active={route().current('users.index')}>
                             <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
@@ -102,8 +102,8 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                 )}
                 {auth.user.role === 'doctor' && (
                      <>
-                        <div className="pt-4 pb-2 px-2">
-                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Doctor's Area</h3>
+                        <div className="pt-6 pb-3 px-3">
+                            <h3 className="text-xs font-semibold text-teal-300 uppercase tracking-wider">منطقة الطبيب</h3>
                         </div>
                         <NavLink href={route('doctor.tool')} active={route().current('doctor.tool')}>
                             <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
@@ -111,11 +111,11 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                         </NavLink>
                         <NavLink href={route('doctor.agenda')} active={route().current('doctor.agenda')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            My Agenda
+                            جدول المواعيد
                         </NavLink>
                         <NavLink href={route('availabilities.index')} active={route().current('availabilities.index')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            My Availability
+                            أوقات التوفر
                         </NavLink>
                     </>
                 )}
@@ -129,7 +129,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
             {/* Static sidebar for desktop */}
             <aside className="hidden md:flex md:flex-shrink-0">
                 <div className="flex flex-col w-64">
-                    <div className="flex flex-col h-0 flex-1 bg-gray-800 dark:bg-gray-900">
+                    <div className="flex flex-col h-0 flex-1 bg-gradient-to-b from-slate-800 to-slate-900 dark:from-slate-800 dark:to-slate-900">
                         <SidebarContent />
                     </div>
                 </div>

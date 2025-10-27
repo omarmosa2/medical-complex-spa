@@ -27,28 +27,35 @@ class PatientController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('file_number', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('residence', 'like', "%{$search}%");
             });
         }
 
         // Handle filters
-        if ($request->has('name') && !empty($request->name)) {
-            $query->where('name', $request->name);
+        if ($request->has('full_name') && !empty($request->full_name)) {
+            $query->where('full_name', $request->full_name);
         }
         if ($request->has('phone') && !empty($request->phone)) {
             $query->where('phone', $request->phone);
         }
-        if ($request->has('file_number') && !empty($request->file_number)) {
-            $query->where('file_number', $request->file_number);
+        if ($request->has('email') && !empty($request->email)) {
+            $query->where('email', $request->email);
+        }
+        if ($request->has('residence') && !empty($request->residence)) {
+            $query->where('residence', $request->residence);
         }
 
         $patients = $query->paginate(10)->through(fn ($patient) => [
             'id' => $patient->id,
-            'name' => $patient->name,
+            'full_name' => $patient->full_name,
+            'gender' => $patient->gender,
+            'age' => $patient->age,
+            'residence' => $patient->residence,
             'phone' => $patient->phone,
-            'file_number' => $patient->file_number,
+            'email' => $patient->email,
         ]);
 
         // Calculate stats
@@ -60,15 +67,18 @@ class PatientController extends Controller
 
         // Filter options
         $filterOptions = [
-            'names' => Patient::distinct()->pluck('name')->filter()->values(),
+            'full_names' => Patient::distinct()->pluck('full_name')->filter()->values(),
+            'genders' => Patient::distinct()->pluck('gender')->filter()->values(),
+            'ages' => Patient::distinct()->pluck('age')->filter()->values(),
+            'residences' => Patient::distinct()->pluck('residence')->filter()->values(),
             'phones' => Patient::distinct()->pluck('phone')->filter()->values(),
-            'file_numbers' => Patient::distinct()->pluck('file_number')->filter()->values(),
+            'emails' => Patient::distinct()->pluck('email')->filter()->values(),
         ];
 
         return Inertia::render('Patients/Index', [
             'patients' => $patients,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'name', 'phone', 'file_number']), // Pass current filters back
+            'filters' => $request->only(['search', 'full_name', 'phone', 'email', 'residence']), // Pass current filters back
             'filterOptions' => $filterOptions,
         ]);
     }
@@ -86,14 +96,12 @@ class PatientController extends Controller
      */
     public function store(StorePatientRequest $request)
     {
-        $data = $request->validated();
-        $data['file_number'] = 'PAT-' . str_pad(Patient::count() + 1, 6, '0', STR_PAD_LEFT);
-        $patient = Patient::create($data);
+        $patient = Patient::create($request->validated());
 
         ActivityLog::create([
             'user_id' => auth()->id(),
             'action' => 'created_patient',
-            'description' => "Created patient: {$patient->name}",
+            'description' => "Created patient: {$patient->full_name}",
         ]);
 
         return redirect()->route('patients.index');

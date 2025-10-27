@@ -23,11 +23,13 @@ class UpdatePatientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'phone' => ['required', 'string', Rule::unique('patients')->ignore($this->patient)],
-            'date_of_birth' => 'required|date|before:today',
+            'full_name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'address' => 'nullable|string',
+            'age' => 'required|integer|min:1|max:150',
+            'residence' => 'required|string|max:255',
+            'phone' => ['nullable', 'string', Rule::unique('patients')->ignore($this->patient)],
+            'email' => ['nullable', 'email', Rule::unique('patients')->ignore($this->patient)],
+            'notes' => 'nullable|string',
         ];
     }
 }

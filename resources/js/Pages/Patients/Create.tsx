@@ -10,13 +10,13 @@ import { FormEventHandler } from 'react';
 
 export default function Create({ auth }: PageProps) {
     const { data, setData, post, processing, errors } = useForm({
-        name: '',
+        full_name: '',
+        gender: '',
+        age: '',
+        residence: '',
         phone: '',
         email: '',
-        date_of_birth: '',
-        gender: '',
-        address: '',
-        file_number: '',
+        notes: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -27,59 +27,59 @@ export default function Create({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Add New Patient</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">إضافة مريض جديد</h2>}
         >
-            <Head title="Add Patient" />
+            <Head title="إضافة مريض" />
 
-            <div className="py-12">
+            <div className="py-12" dir="rtl">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <Card>
                         <form onSubmit={submit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <InputLabel htmlFor="name" value="Name" />
-                                    <TextInput id="name" name="name" value={data.name} className="mt-1 block w-full" onChange={(e) => setData('name', e.target.value)} required />
-                                    <InputError message={errors.name} className="mt-2" />
+                                    <InputLabel htmlFor="full_name" value="الاسم الثلاثي" />
+                                    <TextInput id="full_name" name="full_name" value={data.full_name} className="mt-1 block w-full" onChange={(e) => setData('full_name', e.target.value)} required />
+                                    <InputError message={errors.full_name} className="mt-2" />
                                 </div>
                                 <div>
-                                    <InputLabel htmlFor="file_number" value="File Number" />
-                                    <TextInput id="file_number" name="file_number" value={data.file_number} className="mt-1 block w-full" onChange={(e) => setData('file_number', e.target.value)} required />
-                                    <InputError message={errors.file_number} className="mt-2" />
-                                </div>
-                                <div>
-                                    <InputLabel htmlFor="phone" value="Phone" />
-                                    <TextInput id="phone" name="phone" value={data.phone} className="mt-1 block w-full" onChange={(e) => setData('phone', e.target.value)} required />
-                                    <InputError message={errors.phone} className="mt-2" />
-                                </div>
-                                <div>
-                                    <InputLabel htmlFor="email" value="Email" />
-                                    <TextInput id="email" type="email" name="email" value={data.email} className="mt-1 block w-full" onChange={(e) => setData('email', e.target.value)} />
-                                    <InputError message={errors.email} className="mt-2" />
-                                </div>
-                                <div>
-                                    <InputLabel htmlFor="date_of_birth" value="Date of Birth" />
-                                    <TextInput id="date_of_birth" type="date" name="date_of_birth" value={data.date_of_birth} className="mt-1 block w-full" onChange={(e) => setData('date_of_birth', e.target.value)} />
-                                    <InputError message={errors.date_of_birth} className="mt-2" />
-                                </div>
-                                <div>
-                                    <InputLabel htmlFor="gender" value="Gender" />
+                                    <InputLabel htmlFor="gender" value="الجنس" />
                                     <select id="gender" name="gender" value={data.gender} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('gender', e.target.value)}>
-                                        <option value="">Select Gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
+                                        <option value="">اختر الجنس</option>
+                                        <option value="male">ذكر</option>
+                                        <option value="female">أنثى</option>
                                     </select>
                                     <InputError message={errors.gender} className="mt-2" />
                                 </div>
+                                <div>
+                                    <InputLabel htmlFor="age" value="العمر" />
+                                    <TextInput id="age" type="number" name="age" value={data.age} className="mt-1 block w-full" onChange={(e) => setData('age', e.target.value)} required />
+                                    <InputError message={errors.age} className="mt-2" />
+                                </div>
+                                <div>
+                                    <InputLabel htmlFor="residence" value="مكان الإقامة" />
+                                    <TextInput id="residence" name="residence" value={data.residence} className="mt-1 block w-full" onChange={(e) => setData('residence', e.target.value)} required />
+                                    <InputError message={errors.residence} className="mt-2" />
+                                </div>
+                                <div>
+                                    <InputLabel htmlFor="phone" value="رقم الهاتف" />
+                                    <TextInput id="phone" name="phone" value={data.phone} className="mt-1 block w-full" onChange={(e) => setData('phone', e.target.value)} />
+                                    <InputError message={errors.phone} className="mt-2" />
+                                </div>
+                                <div>
+                                    <InputLabel htmlFor="email" value="الإيميل" />
+                                    <TextInput id="email" type="email" name="email" value={data.email} className="mt-1 block w-full" onChange={(e) => setData('email', e.target.value)} />
+                                    <InputError message={errors.email} className="mt-2" />
+                                </div>
                                 <div className="md:col-span-2">
-                                    <InputLabel htmlFor="address" value="Address" />
-                                    <TextInput id="address" name="address" value={data.address} className="mt-1 block w-full" onChange={(e) => setData('address', e.target.value)} />
-                                    <InputError message={errors.address} className="mt-2" />
+                                    <InputLabel htmlFor="notes" value="ملاحظات" />
+                                    <textarea id="notes" name="notes" value={data.notes} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('notes', e.target.value)} rows={4} />
+                                    <InputError message={errors.notes} className="mt-2" />
                                 </div>
                             </div>
 
                             <div className="flex items-center justify-end mt-6">
                                 <Button className="ms-4" disabled={processing}>
-                                    Save Patient
+                                    حفظ المريض
                                 </Button>
                             </div>
                         </form>

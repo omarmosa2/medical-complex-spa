@@ -6,8 +6,8 @@ export default function NavLink({ active = false, className = '', children, ...p
             {...props}
             className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
                 active
-                    ? 'bg-gray-700 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-teal-600 text-white shadow-md'
+                    : 'text-gray-300 hover:bg-teal-100 hover:text-teal-800 dark:hover:bg-gray-600 dark:hover:text-white'
             } ${className}`}
         >
             {children}

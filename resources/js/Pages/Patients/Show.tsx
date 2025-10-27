@@ -10,7 +10,7 @@ import Button from '@/Components/Button';
 import { DocumentPlusIcon, CalendarDaysIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
 
 export default function Show({ auth, patient }: PageProps<{ patient: Patient }>) {
-    const [activeTab, setActiveTab] = useState('appointments');
+    const [activeTab, setActiveTab] = useState('info');
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         file: null as File | null,
@@ -30,44 +30,112 @@ export default function Show({ auth, patient }: PageProps<{ patient: Patient }>)
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Patient Profile: {patient.name}</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">ملف المريض: {patient.full_name}</h2>}
         >
-            <Head title={patient.name} />
+            <Head title={patient.full_name} />
 
-            <div className="py-12">
+            <div className="py-12" dir="rtl">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
                         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                            <button onClick={() => setActiveTab('info')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'info' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+                                <UserIcon className="h-5 w-5 mr-2" />
+                                معلومات شخصية
+                            </button>
                             <button onClick={() => setActiveTab('appointments')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'appointments' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
                                 <CalendarDaysIcon className="h-5 w-5 mr-2" />
-                                Appointments
+                                المواعيد
                             </button>
                             <button onClick={() => setActiveTab('medical_records')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'medical_records' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
                                 <DocumentTextIcon className="h-5 w-5 mr-2" />
-                                Medical Records
+                                السجلات الطبية
                             </button>
                             <button onClick={() => setActiveTab('documents')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'documents' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
                                 <DocumentPlusIcon className="h-5 w-5 mr-2" />
-                                Documents
+                                الوثائق
                             </button>
                         </nav>
                     </div>
 
+                    {activeTab === 'info' && (
+                        <Card>
+                            <div className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">معلومات المريض</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <InputLabel value="الاسم الثلاثي" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.full_name}</p>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="الجنس" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.gender === 'male' ? 'ذكر' : 'أنثى'}</p>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="العمر" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.age}</p>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="مكان الإقامة" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.residence}</p>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="رقم الهاتف" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.phone || 'غير محدد'}</p>
+                                    </div>
+                                    <div>
+                                        <InputLabel value="الإيميل" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.email || 'غير محدد'}</p>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <InputLabel value="ملاحظات" />
+                                        <p className="text-gray-900 dark:text-gray-100">{patient.notes || 'لا توجد ملاحظات'}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-4">
+                                    <Link href={route('patients.edit', patient.id)} className="text-primary-600 hover:text-primary-900">
+                                        تعديل المعلومات
+                                    </Link>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
                     {activeTab === 'appointments' && (
                         <Card>
-                            {/* Appointments content here */}
+                            <div className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">المواعيد</h3>
+                                <p className="text-gray-500">محتوى المواعيد هنا</p>
+                            </div>
                         </Card>
                     )}
 
                     {activeTab === 'medical_records' && (
                         <Card>
-                             {/* Medical records content here */}
+                            <div className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">السجلات الطبية</h3>
+                                <p className="text-gray-500">محتوى السجلات الطبية هنا</p>
+                            </div>
                         </Card>
                     )}
 
                     {activeTab === 'documents' && (
                         <Card>
-                            {/* Documents content here */}
+                            <div className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">الوثائق</h3>
+                                <form onSubmit={submit}>
+                                    <div className="mb-4">
+                                        <InputLabel htmlFor="title" value="عنوان الوثيقة" />
+                                        <TextInput id="title" name="title" value={data.title} onChange={(e) => setData('title', e.target.value)} className="mt-1 block w-full" />
+                                        <InputError message={errors.title} className="mt-2" />
+                                    </div>
+                                    <div className="mb-4">
+                                        <InputLabel htmlFor="file" value="الملف" />
+                                        <input type="file" id="file" onChange={onFileChange} className="mt-1 block w-full" />
+                                        <InputError message={errors.file} className="mt-2" />
+                                    </div>
+                                    <Button disabled={processing}>رفع الوثيقة</Button>
+                                </form>
+                            </div>
                         </Card>
                     )}
                 </div>
