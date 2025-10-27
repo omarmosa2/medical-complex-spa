@@ -49,54 +49,54 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
             <nav className="mt-5 flex-1 px-4 space-y-2">
                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                     <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                    Dashboard
+                    لوحة التحكم
                 </NavLink>
                 <NavLink href={route('patients.index')} active={route().current('patients.index')}>
                     <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                    Patients
+                    إدارة المرضى
                 </NavLink>
                 <NavLink href={route('appointments.index')} active={route().current('appointments.index')}>
                     <CalendarIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                    Appointments
+                    إدارة الحجوزات
                 </NavLink>
                 {(auth.user.role === 'admin' || auth.user.role === 'receptionist') && (
                     <NavLink href={route('payments.index')} active={route().current('payments.index')}>
                         <CreditCardIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                        Payments
+                        المدفوعات
                     </NavLink>
                 )}
                 {auth.user.role === 'admin' && (
                     <>
                         <div className="pt-4 pb-2 px-2">
-                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</h3>
+                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">الإدارة</h3>
                         </div>
                         <NavLink href={route('users.index')} active={route().current('users.index')}>
                             <UsersIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Users
+                            المستخدمين
                         </NavLink>
                         <NavLink href={route('services.index')} active={route().current('services.index')}>
                             <ClipboardDocumentListIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Services
+                            الخدمات
                         </NavLink>
                         <NavLink href={route('medical-record-templates.index')} active={route().current('medical-record-templates.index')}>
                             <DocumentDuplicateIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Record Templates
+                            قوالب التسجيل
                         </NavLink>
                         <NavLink href={route('reports.index')} active={route().current('reports.index')}>
                             <ChartBarIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Reports
+                            التقارير
                         </NavLink>
                         <NavLink href={route('clinics.index')} active={route().current('clinics.index')}>
                             <BuildingOffice2Icon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Clinics
+                            العيادات
                         </NavLink>
                         <NavLink href={route('doctors.index')} active={route().current('doctors.index')}>
                             <UserCircleIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Doctors
+                            الأطباء
                         </NavLink>
                         <NavLink href={route('settings.index')} active={route().current('settings.index')}>
                             <Cog6ToothIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Settings
+                            الإعدادات
                         </NavLink>
                     </>
                 )}
@@ -107,7 +107,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                         </div>
                         <NavLink href={route('doctor.tool')} active={route().current('doctor.tool')}>
                             <HomeIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            Doctor's Tool
+                            أدوات الطبيب
                         </NavLink>
                         <NavLink href={route('doctor.agenda')} active={route().current('doctor.agenda')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-6 w-6" />
@@ -182,11 +182,11 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                     <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>
                                             <UserCircleIcon className="mr-2 h-5 w-5"/>
-                                            Profile
+                                            الملف الشخصي
                                         </Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             <ArrowRightOnRectangleIcon className="mr-2 h-5 w-5"/>
-                                            Log Out
+                                            تسجيل الخروج
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>

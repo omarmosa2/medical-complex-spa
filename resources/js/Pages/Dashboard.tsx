@@ -109,7 +109,7 @@ const DoctorDashboard = ({ todaysAppointments, recentPatients }: { todaysAppoint
                             <p className="text-sm text-gray-500 dark:text-gray-400">{appointment.start_time}</p>
                         </div>
                         <Link href={route('appointments.show', appointment.id)} className="text-primary-600 hover:text-primary-900 font-semibold">
-                            View
+                             عرض
                         </Link>
                     </li>
                 ))}
@@ -122,7 +122,7 @@ const DoctorDashboard = ({ todaysAppointments, recentPatients }: { todaysAppoint
                     <li key={patient.id} className="py-3 flex justify-between items-center">
                         <p className="font-semibold text-gray-800 dark:text-gray-200">{patient.name}</p>
                         <Link href={route('patients.show', patient.id)} className="text-primary-600 hover:text-primary-900 font-semibold">
-                            View Profile
+                            عرض الملف الشخصي
                         </Link>
                     </li>
                 ))}
@@ -165,7 +165,7 @@ const ReceptionistDashboard = ({ todaysAppointments, patients, doctors }: { toda
                         <div className="mt-4">
                             <InputLabel htmlFor="doctor_id" value="Doctor" />
                             <select id="doctor_id" name="doctor_id" value={data.doctor_id} className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm" onChange={(e) => setData('doctor_id', e.target.value)}>
-                                <option value="">Select Doctor</option>
+                                <option value="">تحديد طبيب</option>
                                 {doctors.map(doctor => (
                                     <option key={doctor.id} value={doctor.id}>{doctor.user.name}</option>
                                 ))}
