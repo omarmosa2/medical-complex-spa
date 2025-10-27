@@ -3,8 +3,8 @@ import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
 import Button from '@/Components/Button';
-import TextInput from '@/Components/TextInput';
-import { PlusIcon, UsersIcon, MagnifyingGlassIcon, UserGroupIcon, CalendarDaysIcon, ClockIcon } from '@heroicons/react/24/outline';
+import SearchAndFilter from '@/Components/SearchAndFilter';
+import { PlusIcon, UsersIcon, UserGroupIcon, CalendarDaysIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
@@ -36,34 +36,11 @@ const StatCard = ({ title, value, icon: Icon }: StatCardProps) => (
 );
 
 export default function Index({ auth, patients, stats, filters, filterOptions }: PageProps<{ patients: Paginated<any>, stats: any, filters: any, filterOptions: any }>) {
-    const [search, setSearch] = useState(filters.search || '');
-    const [nameFilter, setNameFilter] = useState(filters.name || '');
-    const [phoneFilter, setPhoneFilter] = useState(filters.phone || '');
-    const [fileNumberFilter, setFileNumberFilter] = useState(filters.file_number || '');
-
-    const handleApplyFilters = () => {
-        router.get(route('patients.index'), {
-            search,
-            name: nameFilter,
-            phone: phoneFilter,
-            file_number: fileNumberFilter,
-        }, { preserveState: true });
-    };
-
-    const handleClearFilters = () => {
-        setSearch('');
-        setNameFilter('');
-        setPhoneFilter('');
-        setFileNumberFilter('');
-        router.get(route('patients.index'), {}, { preserveState: true });
-    };
-
-    useEffect(() => {
-        setSearch(filters.search || '');
-        setNameFilter(filters.name || '');
-        setPhoneFilter(filters.phone || '');
-        setFileNumberFilter(filters.file_number || '');
-    }, [filters]);
+    const filterConfig = [
+        { key: 'name', label: 'الاسم', options: filterOptions.names || [] },
+        { key: 'phone', label: 'الهاتف', options: filterOptions.phones || [] },
+        { key: 'file_number', label: 'رقم الملف', options: filterOptions.file_numbers || [] },
+    ];
 
     return (
         <AuthenticatedLayout
@@ -88,69 +65,13 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
                 </div>
 
                 {/* Search and Filters */}
-                <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
-                    <div className="p-6">
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">البحث والفلترة</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">البحث</label>
-                                <div className="relative">
-                                    <TextInput
-                                        type="text"
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="ابحث في الاسم، الهاتف، أو رقم الملف"
-                                        className="pl-10"
-                                    />
-                                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">فلترة بالاسم</label>
-                                <select
-                                    value={nameFilter}
-                                    onChange={(e) => setNameFilter(e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm"
-                                >
-                                    <option value="">الكل</option>
-                                    {filterOptions.names.map((name: string) => (
-                                        <option key={name} value={name}>{name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">فلترة بالهاتف</label>
-                                <select
-                                    value={phoneFilter}
-                                    onChange={(e) => setPhoneFilter(e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm"
-                                >
-                                    <option value="">الكل</option>
-                                    {filterOptions.phones.map((phone: string) => (
-                                        <option key={phone} value={phone}>{phone}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">فلترة برقم الملف</label>
-                                <select
-                                    value={fileNumberFilter}
-                                    onChange={(e) => setFileNumberFilter(e.target.value)}
-                                    className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm"
-                                >
-                                    <option value="">الكل</option>
-                                    {filterOptions.file_numbers.map((fileNumber: string) => (
-                                        <option key={fileNumber} value={fileNumber}>{fileNumber}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="flex justify-end mt-4 space-x-2">
-                            <Button onClick={handleClearFilters} className="bg-gray-500 hover:bg-gray-600">مسح الفلاتر</Button>
-                            <Button onClick={handleApplyFilters}>تطبيق الفلاتر</Button>
-                        </div>
-                    </div>
-                </Card>
+                <SearchAndFilter
+                    searchPlaceholder="ابحث في الاسم، الهاتف، أو رقم الملف"
+                    filters={filterConfig}
+                    currentFilters={filters}
+                    routeName="patients.index"
+                    debounceMs={300}
+                />
 
                 {/* Table */}
                 <Card className="border border-gray-200 dark:border-gray-700 shadow-md">
@@ -193,8 +114,12 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
                                     <tr>
                                         <td colSpan={4} className="text-center py-12">
                                             <UsersIcon className="mx-auto h-12 w-12 text-gray-400" />
-                                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">لا توجد مرضى</h3>
-                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">ابدأ بإنشاء مريض جديد.</p>
+                                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {Object.keys(filters).length > 0 ? 'لا يوجد بيانات مطابقة' : 'لا توجد مرضى'}
+                                            </h3>
+                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                                {Object.keys(filters).length > 0 ? 'جرب تعديل معايير البحث أو الفلترة.' : 'ابدأ بإنشاء مريض جديد.'}
+                                            </p>
                                             <div className="mt-6">
                                                 <Link href={route('patients.create')}>
                                                     <Button>
