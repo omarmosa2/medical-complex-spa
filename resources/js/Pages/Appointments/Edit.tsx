@@ -19,10 +19,10 @@ interface AppointmentsEditProps {
 
 export default function Edit({ auth, appointment, patients, doctors, services, clinics }: PageProps<AppointmentsEditProps>) {
     const { data, setData, patch, processing, errors, reset } = useForm({
-        patient_id: appointment.patient_id?.toString() || '',
-        doctor_id: appointment.doctor_id?.toString() || '',
-        service_id: appointment.service_id?.toString() || '',
-        clinic_id: appointment.clinic_id?.toString() || '',
+        patient_id: appointment.patient?.id?.toString() || appointment.patient_id?.toString() || '',
+        doctor_id: appointment.doctor?.id?.toString() || appointment.doctor_id?.toString() || '',
+        service_id: appointment.service?.id?.toString() || appointment.service_id?.toString() || '',
+        clinic_id: appointment.clinic?.id?.toString() || appointment.clinic_id?.toString() || '',
         appointment_date: appointment.appointment_date || '',
         appointment_time: appointment.appointment_time || '',
         status: appointment.status || 'scheduled',
@@ -80,13 +80,13 @@ export default function Edit({ auth, appointment, patients, doctors, services, c
                                         <div>
                                             <span className="font-medium text-gray-700">المريض:</span>
                                             <span className="mr-2 text-gray-600">
-                                                {appointment.patient?.full_name || 'غير محدد'}
+                                                {appointment.patient?.full_name || appointment.patient?.name || 'غير محدد'}
                                             </span>
                                         </div>
                                         <div>
                                             <span className="font-medium text-gray-700">الطبيب:</span>
                                             <span className="mr-2 text-gray-600">
-                                                {appointment.doctor?.user?.name || 'غير محدد'}
+                                                {appointment.doctor?.user?.name || appointment.doctor?.name || 'غير محدد'}
                                             </span>
                                         </div>
                                         <div>
@@ -124,7 +124,7 @@ export default function Edit({ auth, appointment, patients, doctors, services, c
                                         <option value="">اختر مريض</option>
                                         {patients.map(p => (
                                             <option key={p.id} value={p.id}>
-                                                {p.full_name} {p.phone ? `(${p.phone})` : ''}
+                                                {p.full_name || p.name} {p.phone ? `(${p.phone})` : ''}
                                             </option>
                                         ))}
                                     </select>

@@ -27,7 +27,6 @@ export default defineConfig(({ command, mode }) => {
         // Ensure React development mode detection works correctly
         define: {
             'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-            'process.env.REACT_APP_ENV': JSON.stringify(mode),
             // Ensure global process object exists for React
             global: 'globalThis',
         },

@@ -10,6 +10,7 @@ export type User = {
 export type Patient = {
     id: number;
     full_name: string;
+    name?: string; // For backward compatibility
     gender: 'male' | 'female';
     age: number;
     residence: string;

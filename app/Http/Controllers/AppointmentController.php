@@ -36,7 +36,11 @@ class AppointmentController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->whereHas('patient', function($patientQuery) use ($search) {
-                    $patientQuery->where('full_name', 'like', "%{$search}%");
+                    // Search in both full_name and name fields for compatibility
+                    $patientQuery->where(function($pq) use ($search) {
+                        $pq->where('full_name', 'like', "%{$search}%")
+                           ->orWhere('name', 'like', "%{$search}%");
+                    });
                 })->orWhereHas('doctor.user', function($doctorQuery) use ($search) {
                     $doctorQuery->where('name', 'like', "%{$search}%");
                 })->orWhereHas('service', function($serviceQuery) use ($search) {
@@ -113,12 +117,7 @@ class AppointmentController extends Controller
         }
 
         return Inertia::render('Appointments/TestApi', [
-            'patients' => $patients->map(function($patient) {
-                return [
-                    'id' => $patient->id,
-                    'full_name' => $patient->name,
-                ];
-            }),
+            'patients' => $patients,
             'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
             'clinics' => \App\Models\Clinic::all(),
@@ -205,9 +204,12 @@ class AppointmentController extends Controller
      */
     public function edit(Appointment $appointment)
     {
+        // Load all necessary relationships for the edit form
+        $appointment->load(['patient', 'doctor.user', 'service', 'clinic']);
+        
         return Inertia::render('Appointments/Edit', [
-            'appointment' => $appointment->load(['patient', 'doctor.user', 'service']),
-            'patients' => Patient::all(),
+            'appointment' => $appointment,
+            'patients' => Patient::select('id', 'full_name', 'name', 'phone')->get(),
             'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
             'clinics' => \App\Models\Clinic::all(),
@@ -219,8 +221,13 @@ class AppointmentController extends Controller
      */
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
-        $appointment->update($request->validated());
-        return redirect()->route('appointments.index');
+        try {
+            $appointment->update($request->validated());
+            return redirect()->route('appointments.index')->with('success', 'تم تحديث الموعد بنجاح');
+        } catch (\Exception $e) {
+            Log::error('Error updating appointment:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->withInput()->withErrors(['error' => 'خطأ في تحديث الموعد: ' . $e->getMessage()]);
+        }
     }
 
     /**

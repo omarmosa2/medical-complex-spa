@@ -46,7 +46,6 @@ export default function Show({ auth, appointment, templates }: PageProps<{ appoi
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Consultation</h2>}
         >
             <Head title="Consultation" />
@@ -60,7 +59,7 @@ export default function Show({ auth, appointment, templates }: PageProps<{ appoi
                                 {appointment.patient.medical_records?.map(record => (
                                     <div key={record.id} className="p-4 border rounded-lg">
                                         <p className="font-bold">{new Date(record.created_at).toLocaleDateString()}</p>
-                                        <p className="text-sm text-gray-600">Doctor: {record.doctor.user.name}</p>
+                                        <p className="text-sm text-gray-600">Doctor: {record.doctor.user?.name || record.doctor?.name || 'غير محدد'}</p>
                                         <p className="mt-2"><strong>Diagnosis:</strong> {record.diagnosis}</p>
                                         <p><strong>Prescription:</strong> {record.prescription}</p>
                                     </div>

@@ -8,7 +8,7 @@ import { FormEventHandler, useState } from 'react';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
-import { PlusIcon, CalendarDaysIcon, TableCellsIcon, ListBulletIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, CalendarDaysIcon, TableCellsIcon, ListBulletIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -43,6 +43,11 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [appointmentToDelete, setAppointmentToDelete] = useState<Appointment | null>(null);
+    
+    // Form for deletion
+    const deleteForm = useForm();
     
     // Get current filter values
     const { search = '', status = '', clinic_id = '', doctor_id = '', service_id = '', date_from = '', date_to = '' } = filters || {};
@@ -118,6 +123,23 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
         }
     }
 
+    // Handle delete appointment
+    const handleDeleteClick = (appointment: Appointment) => {
+        setAppointmentToDelete(appointment);
+        setDeleteModalOpen(true);
+    }
+
+    const confirmDelete = () => {
+        if (appointmentToDelete) {
+            deleteForm.delete(`/appointments/${appointmentToDelete.id}`, {
+                onSuccess: () => {
+                    setDeleteModalOpen(false);
+                    setAppointmentToDelete(null);
+                }
+            });
+        }
+    }
+
     return (
         <AuthenticatedLayout
             header={
@@ -180,9 +202,8 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                     />
                                 </div>
                                 <Button
-                                    variant="secondary"
                                     onClick={clearFilters}
-                                    className="px-4"
+                                    className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-700"
                                 >
                                     مسح الفلاتر
                                 </Button>
@@ -283,25 +304,25 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead className="bg-gray-50">
                                             <tr>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     المريض
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     الطبيب
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     الخدمة
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     التاريخ والوقت
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     العيادة
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     الحالة
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     الإجراءات
                                                 </th>
                                             </tr>
@@ -309,42 +330,53 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {appointments.data.map((appointment) => (
                                                 <tr key={appointment.id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                        {appointment.patient?.full_name || 'غير محدد'}
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">
+                                                        {appointment.patient?.full_name || appointment.patient?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {appointment.doctor?.user?.name || 'غير محدد'}
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                        {appointment.doctor?.user?.name || appointment.doctor?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                                                         {appointment.service?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        <div>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                        <div className="flex flex-col items-center">
                                                             <div className="font-medium">{appointment.appointment_date}</div>
                                                             <div className="text-gray-400">{appointment.appointment_time}</div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                                                         {appointment.clinic?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center">
                                                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
                                                             {getStatusText(appointment.status)}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <Link
-                                                            href={`/appointments/${appointment.id}`}
-                                                            className="text-blue-600 hover:text-blue-900 mr-3"
-                                                        >
-                                                            عرض
-                                                        </Link>
-                                                        <Link
-                                                            href={`/appointments/${appointment.id}/edit`}
-                                                            className="text-green-600 hover:text-green-900"
-                                                        >
-                                                            تعديل
-                                                        </Link>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                        <div className="flex justify-center space-x-2">
+                                                            <Link
+                                                                href={`/appointments/${appointment.id}`}
+                                                                className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-full transition-colors"
+                                                                title="عرض التفاصيل"
+                                                            >
+                                                                <EyeIcon className="h-5 w-5" />
+                                                            </Link>
+                                                            <Link
+                                                                href={`/appointments/${appointment.id}/edit`}
+                                                                className="p-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-full transition-colors"
+                                                                title="تعديل"
+                                                            >
+                                                                <PencilIcon className="h-5 w-5" />
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => handleDeleteClick(appointment)}
+                                                                className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-full transition-colors"
+                                                                title="حذف"
+                                                            >
+                                                                <TrashIcon className="h-5 w-5" />
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -482,6 +514,34 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                 services={services}
                 clinics={clinics}
             />
+
+            {/* Delete Confirmation Modal */}
+            <Modal show={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+                <div className="p-6">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                        تأكيد الحذف
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                        هل أنت متأكد من حذف موعد المريض "{appointmentToDelete?.patient?.full_name}" مع الدكتور "{appointmentToDelete?.doctor?.user?.name}"؟
+                        لا يمكن التراجع عن هذا الإجراء.
+                    </p>
+                    <div className="flex justify-end space-x-3">
+                        <Button
+                            onClick={() => setDeleteModalOpen(false)}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        >
+                            إلغاء
+                        </Button>
+                        <Button
+                            onClick={confirmDelete}
+                            disabled={deleteForm.processing}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            {deleteForm.processing ? 'جارٍ الحذف...' : 'حذف'}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }
