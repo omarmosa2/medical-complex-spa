@@ -25,9 +25,24 @@ class UpdateAppointmentRequest extends FormRequest
             'patient_id' => 'required|exists:patients,id',
             'doctor_id' => 'required|exists:doctors,id',
             'service_id' => 'required|exists:services,id',
-            'appointment_time' => 'required|date',
+            'clinic_id' => 'nullable|exists:clinics,id',
+            'appointment_date' => 'required|date',
+            'appointment_time' => 'required',
             'status' => 'required|in:scheduled,completed,cancelled,no_show',
             'notes' => 'nullable|string',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     */
+    public function attributes(): array
+    {
+        return [
+            'appointment_date' => 'appointment date',
+            'appointment_time' => 'appointment time',
         ];
     }
 }
