@@ -80,7 +80,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                         </NavLink>
                         <NavLink href={route('medical-record-templates.index')} active={route().current('medical-record-templates.index')}>
                             <DocumentDuplicateIcon className="mr-3 flex-shrink-0 h-6 w-6" />
-                            قوالب التسجيل
+                            ملفات المرضى
                         </NavLink>
                         <NavLink href={route('reports.index')} active={route().current('reports.index')}>
                             <ChartBarIcon className="mr-3 flex-shrink-0 h-6 w-6" />

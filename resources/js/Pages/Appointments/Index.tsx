@@ -41,6 +41,7 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
     const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
+    const [selectedTime, setSelectedTime] = useState('');
     const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -78,12 +79,35 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
             startDateTime = app.appointment_time;
         }
         
+        // Get color based on status
+        const getEventColor = (status: Appointment['status']) => {
+            switch (status) {
+                case 'completed': return '#10B981'; // green
+                case 'cancelled': return '#EF4444'; // red
+                case 'no_show': return '#6B7280'; // gray
+                case 'scheduled':
+                default:
+                    return '#3B82F6'; // blue
+            }
+        };
+
         return {
             id: app.id.toString(),
-            title: `${app.patient?.full_name || 'Unknown'} - ${app.service?.name || 'Unknown'}`,
+            title: `${app.patient?.full_name || app.patient?.name || 'غير محدد'}\n${app.service?.name || 'خدمة غير محددة'}\n${app.appointment_time}`,
             start: startDateTime,
+            backgroundColor: getEventColor(app.status),
+            borderColor: getEventColor(app.status),
+            textColor: '#ffffff',
             extendedProps: {
-                clinic: app.clinic?.name,
+                patient: app.patient?.full_name || app.patient?.name || 'غير محدد',
+                doctor: app.doctor?.user?.name || app.doctor?.name || 'غير محدد',
+                service: app.service?.name || 'غير محدد',
+                clinic: app.clinic?.name || 'غير محدد',
+                status: app.status,
+                statusText: getStatusText(app.status),
+                appointment_date: app.appointment_date,
+                appointment_time: app.appointment_time,
+                notes: app.notes || '',
             }
         };
     });
@@ -112,6 +136,18 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
 
     const handleDateClick = (arg: any) => {
         setSelectedDate(arg.dateStr);
+        setSelectedTime('09:00'); // Default time
+        setCreateModalOpen(true);
+    }
+
+    const handleSelect = (arg: any) => {
+        // Extract date and time from selected period
+        const selectedDateTime = new Date(arg.start);
+        const dateStr = selectedDateTime.toISOString().split('T')[0];
+        const timeStr = selectedDateTime.toTimeString().slice(0, 5);
+        
+        setSelectedDate(dateStr);
+        setSelectedTime(timeStr);
         setCreateModalOpen(true);
     }
 
@@ -119,7 +155,55 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
         const appointment = appointments.data.find(app => app.id.toString() === arg.event.id);
         if (appointment) {
             setSelectedAppointment(appointment);
-            // setEditModalOpen(true);
+            // Could open edit modal or appointment details
+        }
+    }
+
+    const handleEventDrop = (arg: any) => {
+        // Handle drag and drop to reschedule appointment
+        const appointment = appointments.data.find(app => app.id.toString() === arg.event.id);
+        if (appointment) {
+            const newDate = arg.event.start.toISOString().split('T')[0];
+            const newTime = arg.event.start.toTimeString().slice(0, 5);
+            
+            // Check for conflicts before updating
+            checkAppointmentConflict(appointment.doctor_id.toString(), newDate, newTime, appointment.id.toString())
+                .then((hasConflict) => {
+                    if (hasConflict) {
+                        alert('يوجد تضارب في المواعيد. يرجى اختيار وقت آخر.');
+                        // Revert the change
+                        window.location.reload();
+                    } else {
+                        // Update appointment via API
+                        useForm({
+                            appointment_date: newDate,
+                            appointment_time: newTime
+                        }).put(`/appointments/${appointment.id}`, {
+                            onSuccess: () => {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                });
+        }
+    }
+
+    // Check for appointment conflicts
+    const checkAppointmentConflict = async (doctorId: string, date: string, time: string, excludeId?: string) => {
+        try {
+            const params = new URLSearchParams({
+                doctor_id: doctorId,
+                appointment_date: date,
+                appointment_time: time,
+                ...(excludeId && { exclude_id: excludeId })
+            });
+            
+            const response = await fetch(`/appointments/check-conflict?${params}`);
+            const data = await response.json();
+            return data.hasConflict;
+        } catch (error) {
+            console.error('Error checking appointment conflict:', error);
+            return false;
         }
     }
 
@@ -403,35 +487,100 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                             </div>
                         ) : (
                             /* Calendar View */
-                            appointments.data.length > 0 ? (
-                                <FullCalendar
-                                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                                    initialView="timeGridWeek"
-                                    headerToolbar={{
-                                        left: 'prev,next today',
-                                        center: 'title',
-                                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                                    }}
-                                    events={events}
-                                    editable={true}
-                                    selectable={true}
-                                    dateClick={handleDateClick}
-                                    eventClick={handleEventClick}
-                                    height="auto"
-                                />
-                            ) : (
-                                <div className="text-center py-12">
-                                    <CalendarDaysIcon className="mx-auto h-12 w-12 text-gray-400" />
-                                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">لا توجد مواعيد</h3>
-                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">ابدأ بحجز موعد جديد.</p>
-                                    <div className="mt-6">
-                                        <Button onClick={() => setIsModalOpen(true)}>
-                                            <PlusIcon className="h-5 w-5 mr-2" />
-                                            إضافة موعد جديد
-                                        </Button>
+                            <div className="calendar-container">
+                                {appointments.data.length > 0 ? (
+                                    <FullCalendar
+                                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                                        initialView="timeGridWeek"
+                                        locale="ar"
+                                        direction="rtl"
+                                        headerToolbar={{
+                                            left: 'prev,next today',
+                                            center: 'title',
+                                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                                        }}
+                                        events={events}
+                                        editable={true}
+                                        selectable={true}
+                                        selectMirror={true}
+                                        dayMaxEvents={true}
+                                        weekends={true}
+                                        dateClick={handleDateClick}
+                                        select={handleSelect}
+                                        eventClick={handleEventClick}
+                                        eventDrop={handleEventDrop}
+                                        eventResize={handleEventDrop}
+                                        height="auto"
+                                        slotMinTime="08:00:00"
+                                        slotMaxTime="20:00:00"
+                                        slotDuration="00:30:00"
+                                        snapDuration="00:15:00"
+                                        expandRows={true}
+                                        eventDisplay="block"
+                                        eventTimeFormat={{
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false
+                                        }}
+                                        slotLabelFormat={{
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false
+                                        }}
+                                        eventContent={(arg) => {
+                                            const { event } = arg;
+                                            const props = event.extendedProps;
+                                            
+                                            return {
+                                                html: `
+                                                    <div class="fc-event-main-frame p-1">
+                                                        <div class="fc-event-title-container">
+                                                            <div class="fc-event-title fc-sticky text-white text-xs">
+                                                                <strong>${props.patient}</strong><br>
+                                                                <span>${props.service}</span><br>
+                                                                <span>${props.appointment_time}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `
+                                            };
+                                        }}
+                                        eventDidMount={(info) => {
+                                            // Add custom styling and tooltips
+                                            const props = info.event.extendedProps;
+                                            info.el.setAttribute('title',
+                                                `المريض: ${props.patient}\n` +
+                                                `الطبيب: ${props.doctor}\n` +
+                                                `الخدمة: ${props.service}\n` +
+                                                `العيادة: ${props.clinic}\n` +
+                                                `الحالة: ${props.statusText}\n` +
+                                                `التاريخ: ${props.appointment_date}\n` +
+                                                `الوقت: ${props.appointment_time}${props.notes ? '\nملاحظات: ' + props.notes : ''}`
+                                            );
+                                        }}
+                                        businessHours={{
+                                            daysOfWeek: [1, 2, 3, 4, 5, 6], // Monday - Saturday
+                                            startTime: '08:00',
+                                            endTime: '20:00',
+                                        }}
+                                        nowIndicator={true}
+                                        scrollTime="08:00:00"
+                                        aspectRatio={1.8}
+                                    />
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <CalendarDaysIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">لا توجد مواعيد</h3>
+                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">انقر على أي تاريخ في التقويم لإضافة موعد جديد.</p>
+                                        <div className="mt-6">
+                                            <Button onClick={() => setIsModalOpen(true)}>
+                                                <PlusIcon className="h-5 w-5 mr-2" />
+                                                إضافة موعد جديد
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            )
+                                )}
+                            </div>
                         )}
 
                         {/* Pagination */}
@@ -508,11 +657,17 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
 
             <Create
                 show={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedDate('');
+                    setSelectedTime('');
+                }}
                 patients={patients}
                 doctors={doctors}
                 services={services}
                 clinics={clinics}
+                date={selectedDate}
+                time={selectedTime}
             />
 
             {/* Delete Confirmation Modal */}
