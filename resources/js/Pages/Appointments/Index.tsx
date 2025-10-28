@@ -114,12 +114,12 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
 
     function getStatusColor(status: Appointment['status']) {
         switch (status) {
-            case 'completed': return 'bg-green-100 text-green-800';
-            case 'cancelled': return 'bg-red-100 text-red-800';
-            case 'no_show': return 'bg-gray-100 text-gray-800';
+            case 'completed': return 'status-completed';
+            case 'cancelled': return 'status-cancelled';
+            case 'no_show': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
             case 'scheduled':
             default:
-                return 'bg-blue-100 text-blue-800';
+                return 'status-scheduled';
         }
     }
 
@@ -228,16 +228,16 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
         <AuthenticatedLayout
             header={
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">المواعيد</h2>
+                    <h2 className="font-semibold text-xl text-foreground leading-tight">المواعيد</h2>
                     <div className="flex items-center space-x-4">
                         {/* View Mode Toggle */}
-                        <div className="flex bg-gray-100 rounded-lg p-1">
+                        <div className="flex bg-muted rounded-lg p-1">
                             <button
                                 onClick={() => setViewMode('table')}
                                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                                     viewMode === 'table'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-card text-primary shadow-sm border border-border'
+                                        : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             >
                                 <TableCellsIcon className="h-4 w-4 inline mr-1" />
@@ -247,8 +247,8 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                 onClick={() => setViewMode('calendar')}
                                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                                     viewMode === 'calendar'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-card text-primary shadow-sm border border-border'
+                                        : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             >
                                 <CalendarDaysIcon className="h-4 w-4 inline mr-1" />
@@ -302,11 +302,11 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                         id="status"
                                         value={status}
                                         onChange={(e) => handleFilterChange('status', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full rounded-md border-input bg-background shadow-sm focus:border-primary focus:ring-primary text-foreground"
                                     >
                                         <option value="">جميع الحالات</option>
                                         {filterOptions.statuses.map((statusOpt) => (
-                                            <option key={statusOpt} value={statusOpt}>
+                                            <option key={statusOpt} value={statusOpt} className="bg-background text-foreground">
                                                 {getStatusText(statusOpt as Appointment['status'])}
                                             </option>
                                         ))}
@@ -320,11 +320,11 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                         id="clinic"
                                         value={clinic_id}
                                         onChange={(e) => handleFilterChange('clinic_id', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full rounded-md border-input bg-background shadow-sm focus:border-primary focus:ring-primary text-foreground"
                                     >
                                         <option value="">جميع العيادات</option>
                                         {filterOptions.clinics.map((clinic) => (
-                                            <option key={clinic.id} value={clinic.id}>
+                                            <option key={clinic.id} value={clinic.id} className="bg-background text-foreground">
                                                 {clinic.name}
                                             </option>
                                         ))}
@@ -338,11 +338,11 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                         id="doctor"
                                         value={doctor_id}
                                         onChange={(e) => handleFilterChange('doctor_id', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full rounded-md border-input bg-background shadow-sm focus:border-primary focus:ring-primary text-foreground"
                                     >
                                         <option value="">جميع الأطباء</option>
                                         {filterOptions.doctors.map((doctor) => (
-                                            <option key={doctor.id} value={doctor.id}>
+                                            <option key={doctor.id} value={doctor.id} className="bg-background text-foreground">
                                                 {doctor.user?.name || 'طبيب غير محدد'}
                                             </option>
                                         ))}
@@ -356,11 +356,11 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                         id="service"
                                         value={service_id}
                                         onChange={(e) => handleFilterChange('service_id', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full rounded-md border-input bg-background shadow-sm focus:border-primary focus:ring-primary text-foreground"
                                     >
                                         <option value="">جميع الخدمات</option>
                                         {filterOptions.services.map((service) => (
-                                            <option key={service.id} value={service.id}>
+                                            <option key={service.id} value={service.id} className="bg-background text-foreground">
                                                 {service.name}
                                             </option>
                                         ))}
@@ -385,51 +385,51 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                         {viewMode === 'table' ? (
                             <div className="overflow-x-auto">
                                 {appointments.data.length > 0 ? (
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
+                                    <table className="min-w-full divide-y divide-border bg-background rounded-lg overflow-hidden">
+                                        <thead className="bg-muted">
                                             <tr>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     المريض
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     الطبيب
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     الخدمة
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     التاريخ والوقت
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     العيادة
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     الحالة
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                                     الإجراءات
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
+                                        <tbody className="bg-card divide-y divide-border">
                                             {appointments.data.map((appointment) => (
-                                                <tr key={appointment.id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">
+                                                <tr key={appointment.id} className="hover:bg-muted transition-colors">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-foreground">
                                                         {appointment.patient?.full_name || appointment.patient?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">
                                                         {appointment.doctor?.user?.name || appointment.doctor?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">
                                                         {appointment.service?.name || 'غير محدد'}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">
                                                         <div className="flex flex-col items-center">
-                                                            <div className="font-medium">{appointment.appointment_date}</div>
-                                                            <div className="text-gray-400">{appointment.appointment_time}</div>
+                                                            <div className="font-medium text-foreground">{appointment.appointment_date}</div>
+                                                            <div className="text-muted-foreground">{appointment.appointment_time}</div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">
                                                         {appointment.clinic?.name || 'غير محدد'}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -441,21 +441,21 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                                         <div className="flex justify-center space-x-2">
                                                             <Link
                                                                 href={`/appointments/${appointment.id}`}
-                                                                className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-full transition-colors"
+                                                                className="p-2 text-primary hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
                                                                 title="عرض التفاصيل"
                                                             >
                                                                 <EyeIcon className="h-5 w-5" />
                                                             </Link>
                                                             <Link
                                                                 href={`/appointments/${appointment.id}/edit`}
-                                                                className="p-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-full transition-colors"
+                                                                className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-full transition-colors"
                                                                 title="تعديل"
                                                             >
                                                                 <PencilIcon className="h-5 w-5" />
                                                             </Link>
                                                             <button
                                                                 onClick={() => handleDeleteClick(appointment)}
-                                                                className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-full transition-colors"
+                                                                className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
                                                                 title="حذف"
                                                             >
                                                                 <TrashIcon className="h-5 w-5" />
@@ -468,9 +468,9 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                     </table>
                                 ) : (
                                     <div className="text-center py-12">
-                                        <ListBulletIcon className="mx-auto h-12 w-12 text-gray-400" />
-                                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">لا توجد مواعيد</h3>
-                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        <ListBulletIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                                        <h3 className="mt-2 text-sm font-medium text-foreground">لا توجد مواعيد</h3>
+                                        <p className="mt-1 text-sm text-muted-foreground">
                                             {search || status || clinic_id || doctor_id || service_id || date_from || date_to
                                                 ? 'لا توجد مواعيد تطابق المعايير المحددة'
                                                 : 'ابدأ بحجز موعد جديد'
@@ -569,9 +569,9 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                     />
                                 ) : (
                                     <div className="text-center py-12">
-                                        <CalendarDaysIcon className="mx-auto h-12 w-12 text-gray-400" />
-                                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">لا توجد مواعيد</h3>
-                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">انقر على أي تاريخ في التقويم لإضافة موعد جديد.</p>
+                                        <CalendarDaysIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                                        <h3 className="mt-2 text-sm font-medium text-foreground">لا توجد مواعيد</h3>
+                                        <p className="mt-1 text-sm text-muted-foreground">انقر على أي تاريخ في التقويم لإضافة موعد جديد.</p>
                                         <div className="mt-6">
                                             <Button onClick={() => setIsModalOpen(true)}>
                                                 <PlusIcon className="h-5 w-5 mr-2" />
@@ -585,7 +585,7 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
 
                         {/* Pagination */}
                         {appointments.data.length > 0 && viewMode === 'table' && (
-                            <div className="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                            <div className="mt-6 flex items-center justify-between border-t border-border bg-card px-4 py-3 sm:px-6">
                                 <div className="flex flex-1 justify-between sm:hidden">
                                     {appointments.links && appointments.links.map((link, index) => (
                                         link.url ? (
@@ -594,8 +594,8 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                                 href={link.url}
                                                 className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
                                                     link.active
-                                                        ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                                        ? 'z-10 bg-primary/10 border-primary text-primary'
+                                                        : 'bg-card border-border text-muted-foreground hover:bg-muted'
                                                 }`}
                                                 dangerouslySetInnerHTML={{ __html: link.label }}
                                             />
@@ -604,17 +604,17 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                 </div>
                                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                                     <div>
-                                        <p className="text-sm text-gray-700">
+                                        <p className="text-sm text-muted-foreground">
                                             عرض{' '}
-                                            <span className="font-medium">
+                                            <span className="font-medium text-foreground">
                                                 {((appointments.current_page - 1) * appointments.per_page) + 1}
                                             </span>{' '}
                                             إلى{' '}
-                                            <span className="font-medium">
+                                            <span className="font-medium text-foreground">
                                                 {Math.min(appointments.current_page * appointments.per_page, appointments.total)}
                                             </span>{' '}
                                             من أصل{' '}
-                                            <span className="font-medium">{appointments.total}</span>{' '}
+                                            <span className="font-medium text-foreground">{appointments.total}</span>{' '}
                                             نتيجة
                                         </p>
                                     </div>
@@ -633,15 +633,15 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
                                                                 : ''
                                                         } ${
                                                             link.active
-                                                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                                                ? 'z-10 bg-primary/10 border-primary text-primary'
+                                                                : 'bg-card border-border text-muted-foreground hover:bg-muted'
                                                         }`}
                                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                                     />
                                                 ) : (
                                                     <span
                                                         key={index}
-                                                        className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300"
+                                                        className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-muted-foreground bg-card border border-border"
                                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                                     />
                                                 )

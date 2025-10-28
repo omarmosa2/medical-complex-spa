@@ -6,8 +6,8 @@ export default function NavLink({ active = false, className = '', children, ...p
             {...props}
             className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 transform hover:scale-[1.02] group ${
                 active
-                    ? 'bg-gray-200 text-black shadow-lg border-l-4 border-gray-400'
-                    : 'text-black hover:bg-gray-100 border-l-4 border-transparent hover:border-gray-400'
+                    ? 'bg-primary/20 text-primary dark:bg-primary/30 dark:text-primary border-l-4 border-primary shadow-md'
+                    : 'text-foreground hover:bg-muted dark:hover:bg-muted/50 border-l-4 border-transparent hover:border-primary/50 dark:hover:border-primary/30'
             } ${className}`}
         >
             {children}

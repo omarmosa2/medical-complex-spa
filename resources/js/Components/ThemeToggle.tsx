@@ -2,17 +2,18 @@ import { useTheme } from '@/Components/ThemeProvider';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 
 export default function ThemeToggle() {
-    const { theme, toggleTheme } = useTheme();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     return (
         <button
             onClick={toggleTheme}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-            {theme === 'light' ? (
-                <MoonIcon className="h-6 w-6" />
+            {isDarkMode ? (
+                <SunIcon className="h-6 w-6 text-yellow-500" />
             ) : (
-                <SunIcon className="h-6 w-6" />
+                <MoonIcon className="h-6 w-6 text-slate-700" />
             )}
         </button>
     );

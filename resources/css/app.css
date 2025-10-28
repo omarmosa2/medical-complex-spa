@@ -2,24 +2,248 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Custom Properties - Sky Theme Variables */
 @layer base {
+    :root {
+        /* Sky Theme - Light Mode */
+        --background: 0 0% 100%;              /* Pure White */
+        --foreground: 201.3 96.3% 15%;        /* Dark Blue-Gray (15% brightness) */
+        --card: 0 0% 100%;                    /* White */
+        --card-foreground: 201.3 96.3% 15%;   /* Dark Blue-Gray */
+        --popover: 0 0% 100%;                 /* White */
+        --popover-foreground: 201.3 96.3% 15%; /* Dark Blue-Gray */
+        
+        /* Primary Brand Colors */
+        --primary: 200.4 98% 39.4%;           /* Sky Blue (Main Brand) */
+        --primary-foreground: 0 0% 98%;       /* Near White */
+        --secondary: 198.6 88.7% 48.4%;       /* Brighter Sky Blue */
+        --secondary-foreground: 0 0% 98%;     /* Near White */
+        
+        /* Supporting Colors */
+        --muted: 197.4 71.1% 95%;             /* Very Light Blue */
+        --muted-foreground: 201.3 96.3% 45%; /* Medium Blue-Gray */
+        --accent: 186.2 83.5% 92%;            /* Light Cyan */
+        --accent-foreground: 201.3 96.3% 15%; /* Dark Blue-Gray */
+        
+        /* Interactive Colors */
+        --destructive: 0 84.2% 60.2%;         /* Red */
+        --destructive-foreground: 0 0% 98%;   /* Near White */
+        --border: 186.2 83.5% 85%;            /* Light Gray-Blue */
+        --input: 186.2 83.5% 82%;             /* Slightly Darker Border */
+        --ring: 200.4 98% 39.4%;              /* Sky Blue (Focus Ring) */
+        
+        --radius: 0.5rem;                     /* Border Radius */
+        
+        /* Chart Colors */
+        --chart-1: 200.4 98% 39.4%;  /* Sky Blue */
+        --chart-2: 142.1 76.2% 47.3%; /* Emerald Green */
+        --chart-3: 38.7 92% 50.4%;   /* Amber */
+        --chart-4: 0 84.2% 60.2%;    /* Red */
+        --chart-5: 262.1 83.3% 57.8%; /* Purple */
+        --chart-6: 188.2 77.4% 46.3%; /* Cyan */
+        --chart-7: 24.6 95% 53.7%;   /* Orange */
+        --chart-8: 330.8 86% 59.8%;  /* Pink */
+        --chart-grid: 186.2 83.5% 85%; /* Grid Lines */
+        --chart-axis: 201.3 96.3% 45%; /* Axis */
+        --chart-text: 201.3 96.3% 15%; /* Text */
+    }
+
+    .dark {
+        /* Sky Theme - Dark Mode */
+        --background: 201.3 96.3% 4%;         /* Very Dark (4% brightness) */
+        --foreground: 186.2 83.5% 92%;        /* Light (92% brightness) */
+        --card: 201.3 96.3% 6%;               /* Very Dark */
+        --card-foreground: 186.2 83.5% 92%;   /* Light */
+        --popover: 201.3 96.3% 6%;            /* Very Dark */
+        --popover-foreground: 186.2 83.5% 92%; /* Light */
+        
+        /* Enhanced Primary Colors for Dark Mode */
+        --primary: 198.6 88.7% 55%;           /* Brighter Sky Blue */
+        --primary-foreground: 201.3 96.3% 4%; /* Very Dark */
+        --secondary: 200.4 98% 45%;           /* Lighter Blue */
+        --secondary-foreground: 186.2 83.5% 92%; /* Light */
+        
+        /* Dark Mode Supporting Colors */
+        --muted: 201.3 96.3% 12%;             /* Dark */
+        --muted-foreground: 197.4 71.1% 70%; /* Medium Light */
+        --accent: 201.3 96.3% 15%;            /* Dark */
+        --accent-foreground: 186.2 83.5% 92%; /* Light */
+        
+        /* Dark Mode Interactive Colors */
+        --destructive: 0 62.8% 55%;           /* Lighter Red */
+        --destructive-foreground: 0 0% 98%;   /* Near White */
+        --border: 201.3 96.3% 18%;            /* Dark Border */
+        --input: 201.3 96.3% 20%;             /* Slightly Lighter Border */
+        --ring: 198.6 88.7% 55%;              /* Brighter Sky Blue */
+    }
+    
     html {
         font-family: 'Noto Sans Arabic', sans-serif;
     }
     body {
         text-align: right;
         direction: rtl;
+        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
     }
     h1 {
-        @apply text-4xl font-bold text-gray-900 dark:text-gray-100;
+        @apply text-4xl font-bold;
+        color: hsl(var(--foreground));
     }
     h2 {
-        @apply text-2xl font-bold text-gray-900 dark:text-gray-100;
+        @apply text-2xl font-bold;
+        color: hsl(var(--foreground));
     }
     h3 {
-        @apply text-xl font-semibold text-gray-800 dark:text-gray-200;
+        @apply text-xl font-semibold;
+        color: hsl(var(--foreground));
     }
 }
+
+/* Utility classes using CSS custom properties */
+@layer utilities {
+    .bg-background {
+        background-color: hsl(var(--background));
+    }
+    .text-foreground {
+        color: hsl(var(--foreground));
+    }
+    .bg-card {
+        background-color: hsl(var(--card));
+    }
+    .text-card-foreground {
+        color: hsl(var(--card-foreground));
+    }
+    .bg-muted {
+        background-color: hsl(var(--muted));
+    }
+    .text-muted-foreground {
+        color: hsl(var(--muted-foreground));
+    }
+    .bg-primary {
+        background-color: hsl(var(--primary));
+    }
+    .text-primary-foreground {
+        color: hsl(var(--primary-foreground));
+    }
+    .border-border {
+        border-color: hsl(var(--border));
+    }
+    .ring-ring {
+        box-shadow: 0 0 0 2px hsl(var(--ring));
+    }
+}
+
+/* Enhanced button hover effects */
+.btn-enhanced {
+    @apply relative overflow-hidden transition-all duration-200 active:scale-[0.98];
+}
+
+/* Enhanced card styles */
+.card-enhanced {
+    @apply bg-card border-border shadow-sm hover:shadow-md transition-all duration-200;
+    @apply dark:shadow-lg dark:shadow-black/10 dark:hover:shadow-xl;
+}
+
+/* Dental-themed component styles */
+.dental-card {
+    @apply bg-card text-card-foreground rounded-lg border shadow-sm;
+}
+
+.dental-button-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    @apply rounded-lg border px-4 py-2 font-medium transition-all duration-200;
+}
+
+.dental-button-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+}
+
+.dental-button-primary:focus {
+    box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+.dental-input {
+    @apply flex h-10 w-full rounded-md border bg-background px-3 py-2;
+    border-color: hsl(var(--input));
+}
+
+/* Status Indicator Classes */
+/* .status-scheduled {
+    @apply text-primary dark:text-primary border rounded-full px-2 py-1 text-xs font-medium;
+    background-color: hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary) / 0.2);
+} */
+
+.dark .status-scheduled {
+    background-color: hsl(var(--primary) / 0.2);
+    border-color: hsl(var(--primary) / 0.3);
+}
+
+.status-completed {
+    @apply border rounded-full px-2 py-1 text-xs font-medium;
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.dark .status-completed {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.status-cancelled {
+    @apply border rounded-full px-2 py-1 text-xs font-medium;
+    background-color: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive) / 0.2);
+}
+
+.dark .status-cancelled {
+    background-color: hsl(var(--destructive) / 0.2);
+    border-color: hsl(var(--destructive) / 0.3);
+}
+
+/* Custom Color Card Gradients */
+.card-green {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+    border-color: #86efac;
+    box-shadow: 0 1px 3px rgba(34, 197, 94, 0.1);
+}
+
+.dark .card-green {
+    background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #166534 100%);
+    border-color: #22c55e;
+    box-shadow: 0 1px 3px rgba(34, 197, 94, 0.2);
+}
+
+.card-blue {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+    border-color: #93c5fd;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+}
+
+.dark .card-blue {
+    background: linear-gradient(135deg, #172554 0%, #1e3a8a 50%, #1d4ed8 100%);
+    border-color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+}
+
+.card-purple {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
+    border-color: #c084fc;
+    box-shadow: 0 1px 3px rgba(168, 85, 247, 0.1);
+}
+
+.dark .card-purple {
+    background: linear-gradient(135deg, #2e1065 0%, #581c87 50%, #7c2d12 100%);
+    border-color: #a855f7;
+    box-shadow: 0 1px 3px rgba(168, 85, 247, 0.2);
+}
+
 /* FullCalendar Arabic RTL Support */
 .calendar-container {
     direction: rtl;
@@ -89,14 +313,14 @@
 }
 
 .fc-button-primary {
-    background-color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+    background-color: #0ea5e9 !important;
+    border-color: #0ea5e9 !important;
     color: white !important;
 }
 
 .fc-button-primary:hover {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
+    background-color: #0284c7 !important;
+    border-color: #0284c7 !important;
 }
 
 .fc-button-primary:disabled {
@@ -104,10 +328,10 @@
     border-color: #9ca3af !important;
 }
 
-/* Event status colors */
+/* Event status colors - Updated with new theme colors */
 .fc-event.status-completed {
-    background-color: #10b981 !important;
-    border-color: #10b981 !important;
+    background-color: #22c55e !important;
+    border-color: #22c55e !important;
 }
 
 .fc-event.status-cancelled {
@@ -121,8 +345,8 @@
 }
 
 .fc-event.status-scheduled {
-    background-color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+    background-color: #0ea5e9 !important;
+    border-color: #0ea5e9 !important;
 }
 
 /* Tooltip styles */
