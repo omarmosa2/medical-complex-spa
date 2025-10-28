@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PatientController extends Controller
@@ -99,7 +100,7 @@ class PatientController extends Controller
         $patient = Patient::create($request->validated());
 
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action' => 'created_patient',
             'description' => "Created patient: {$patient->full_name}",
         ]);
@@ -137,6 +138,36 @@ class PatientController extends Controller
         $patient->update($request->validated());
 
         return redirect()->route('patients.index');
+    }
+
+    /**
+     * Get patient data for appointment booking
+     */
+    public function getPatientData(Request $request, $id)
+    {
+        try {
+            $patient = Patient::find($id);
+            
+            if (!$patient) {
+                return response()->json(['error' => 'Patient not found'], 404);
+            }
+
+            // Calculate age from date_of_birth
+            $age = now()->diffInYears($patient->date_of_birth);
+
+            return response()->json([
+                'id' => $patient->id,
+                'name' => $patient->name, // استخدام 'name' بدلاً من 'full_name'
+                'full_name' => $patient->name, // إضافة أيضاً full_name للتوافق
+                'gender' => $patient->gender,
+                'age' => $age,
+                'date_of_birth' => $patient->date_of_birth,
+                'phone' => $patient->phone,
+                'address' => $patient->address,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
+        }
     }
 
     /**

@@ -20,6 +20,7 @@ class Appointment extends Model
         'status',
         'amount_paid',
         'discount',
+        'total_amount',
     ];
 
     public function patient()

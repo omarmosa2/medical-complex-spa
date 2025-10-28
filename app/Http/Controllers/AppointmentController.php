@@ -13,6 +13,7 @@ use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -42,11 +43,28 @@ class AppointmentController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Appointments/Create', [
-            'patients' => Patient::all(),
+        // Check if we have patients first
+        $patients = Patient::select('id', 'full_name', 'phone', 'date_of_birth', 'gender', 'address')->get();
+        
+        if ($patients->isEmpty()) {
+            return Inertia::render('Appointments/AddAppointment', [
+                'patients' => $patients,
+                'doctors' => Doctor::with(['user', 'clinic'])->get(),
+                'services' => Service::all(),
+                'clinics' => \App\Models\Clinic::all(),
+                'defaultDate' => now()->format('Y-m-d'),
+                'defaultTime' => now()->format('H:i'),
+                'infoMessage' => 'لا توجد مرضى في النظام. يرجى إضافة مرضى أولاً.',
+            ]);
+        }
+
+        return Inertia::render('Appointments/AddAppointment', [
+            'patients' => $patients,
             'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
             'clinics' => \App\Models\Clinic::all(),
+            'defaultDate' => now()->format('Y-m-d'),
+            'defaultTime' => now()->format('H:i'),
         ]);
     }
 
@@ -68,7 +86,7 @@ class AppointmentController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
-            $appointment = Appointment::create($request->all() + ['receptionist_id' => auth()->id()]);
+            $appointment = Appointment::create($request->all() + ['receptionist_id' => Auth::id()]);
 
             // 1. Create Payment Record
             $appointment->payment()->create([
@@ -95,7 +113,7 @@ class AppointmentController extends Controller
 
             // 4. Create Transaction for Clinic Profit
             Transaction::create([
-                'user_id' => auth()->id(), // Associated with the receptionist who booked
+                'user_id' => Auth::id(), // Associated with the receptionist who booked
                 'appointment_id' => $appointment->id,
                 'type' => 'credit',
                 'amount' => $clinic_profit,
@@ -103,9 +121,9 @@ class AppointmentController extends Controller
             ]);
 
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'action' => 'created_appointment',
-                'description' => "Created appointment for patient {$appointment->patient->name} with doctor {$doctor->user->name}",
+                'description' => "Created appointment for patient {$appointment->patient->full_name} with doctor {$doctor->user->name}",
             ]);
         });
 

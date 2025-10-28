@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
     // Medical Record Templates for Doctors
     Route::resource('medical-record-templates', MedicalRecordTemplateController::class);
     Route::resource('patients', PatientController::class);
+    // API endpoint to get patient data for appointment booking
+    Route::get('/patients/{id}/data', [PatientController::class, 'getPatientData'])->name('patients.data');
     Route::resource('services', ServiceController::class);
     Route::resource('users', UserController::class);
     Route::resource('appointments', AppointmentController::class);

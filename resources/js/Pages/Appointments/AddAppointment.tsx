@@ -1,15 +1,24 @@
-import Modal from '@/Components/Modal';
+import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
-import { FormEventHandler, useEffect, useState } from 'react';
+import { FormEventHandler } from 'react';
 import { Patient, Doctor, Service, Clinic } from '@/types';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import Button from '@/Components/Button';
 
+interface AddAppointmentProps {
+    patients: Patient[];
+    doctors: Doctor[];
+    services: Service[];
+    clinics: Clinic[];
+    defaultDate: string;
+    defaultTime: string;
+}
+
 interface PatientData {
     id: number;
-    name: string;
+    name: string; // هذا يجب أن يكون full_name
     gender: 'male' | 'female';
     age: number;
     date_of_birth: string;
@@ -17,41 +26,25 @@ interface PatientData {
     address?: string;
 }
 
-interface CreateProps {
-    show: boolean;
-    onClose: () => void;
-    patients: Patient[];
-    doctors: Doctor[];
-    services: Service[];
-    clinics: Clinic[];
-    date?: string;
-    time?: string;
-}
-
-export default function Create({
-    show,
-    onClose,
-    patients,
-    doctors,
-    services,
-    clinics,
-    date = new Date().toISOString().split('T')[0],
-    time = new Date().toTimeString().slice(0, 5)
-}: CreateProps) {
+export default function AddAppointment({ 
+    patients, 
+    doctors, 
+    services, 
+    clinics, 
+    defaultDate, 
+    defaultTime 
+}: AddAppointmentProps) {
     const { data, setData, post, processing, errors } = useForm({
-        appointment_date: date,
-        appointment_time: time,
+        appointment_date: defaultDate,
+        appointment_time: defaultTime,
         patient_id: '',
         patient_gender: '',
         patient_age: '',
         clinic_id: '',
-        doctor_id: '',
         service_id: '',
         appointment_cost: '',
         discount: '',
         final_amount: '',
-        notes: '',
-        status: 'scheduled',
     });
 
     const [selectedPatientData, setSelectedPatientData] = useState<PatientData | null>(null);
@@ -75,6 +68,7 @@ export default function Create({
         if (patientId) {
             setLoadingPatient(true);
             try {
+                console.log('Fetching patient data for ID:', patientId);
                 const response = await fetch(`/patients/${patientId}/data`);
                 
                 if (!response.ok) {
@@ -82,6 +76,8 @@ export default function Create({
                 }
                 
                 const patientData = await response.json();
+                console.log('Patient data received:', patientData);
+                
                 setSelectedPatientData(patientData);
                 setData('patient_gender', patientData.gender === 'male' ? 'ذكر' : 'أنثى');
                 setData('patient_age', patientData.age.toString());
@@ -104,35 +100,22 @@ export default function Create({
         // تحويل التاريخ والوقت إلى تنسيق واحد
         const appointmentDateTime = `${data.appointment_date}T${data.appointment_time}:00`;
         
-        // تحديث البيانات في form state
-        setData({
-            ...data,
-            appointment_time: appointmentDateTime,
-            doctor_id: data.doctor_id,
-            service_id: data.service_id,
-            clinic_id: data.clinic_id,
-            status: data.status,
-            notes: data.notes,
-            amount_paid: parseFloat(data.final_amount) || 0,
-            discount: parseFloat(data.discount) || 0,
-        });
+        setData('appointment_time', appointmentDateTime);
         
-        post(route('appointments.store'), {
-            onSuccess: () => onClose(),
-        });
+        post(route('appointments.store'));
     };
 
     return (
-        <Modal show={show} onClose={onClose}>
-            <div className="p-6" style={{ direction: 'rtl' }}>
-                <div className="bg-white rounded-lg">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center border-b pb-4">
+        <div className="min-h-screen bg-gray-50 p-6" style={{ direction: 'rtl' }}>
+            <div className="max-w-4xl mx-auto">
+                <div className="bg-white shadow-lg rounded-lg p-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
                         إضافة موعد جديد
-                    </h2>
+                    </h1>
 
                     <form onSubmit={submit} className="space-y-6">
-                        {/* معلومات الموعد الأساسية */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* معلومات الموعد */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <InputLabel htmlFor="appointment_date" value="تاريخ الموعد" />
                                 <TextInput
@@ -163,10 +146,10 @@ export default function Create({
                         </div>
 
                         {/* معلومات المريض */}
-                        <div className="bg-blue-50 p-4 rounded-lg border-r-4 border-blue-500">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">معلومات المريض</h3>
+                        <div className="bg-blue-50 p-6 rounded-lg">
+                            <h2 className="text-xl font-semibold text-gray-900 mb-4">معلومات المريض</h2>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <InputLabel htmlFor="patient_id" value="اسم المريض الثلاثي" />
                                     <select
@@ -224,11 +207,11 @@ export default function Create({
                             </div>
                         </div>
 
-                        {/* معلومات العيادة والطبيب والخدمة */}
-                        <div className="bg-green-50 p-4 rounded-lg border-r-4 border-green-500">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">معلومات العيادة والطبيب والخدمة</h3>
+                        {/* معلومات العيادة والخدمة */}
+                        <div className="bg-green-50 p-6 rounded-lg">
+                            <h2 className="text-xl font-semibold text-gray-900 mb-4">معلومات العيادة والخدمة</h2>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <InputLabel htmlFor="clinic_id" value="العيادة" />
                                     <select
@@ -236,10 +219,7 @@ export default function Create({
                                         name="clinic_id"
                                         value={data.clinic_id}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        onChange={(e) => {
-                                            setData('clinic_id', e.target.value);
-                                            setData('doctor_id', ''); // Reset doctor when clinic changes
-                                        }}
+                                        onChange={(e) => setData('clinic_id', e.target.value)}
                                         required
                                     >
                                         <option value="">اختر عيادة</option>
@@ -250,34 +230,6 @@ export default function Create({
                                         ))}
                                     </select>
                                     <InputError message={errors.clinic_id} className="mt-2" />
-                                </div>
-
-                                <div>
-                                    <InputLabel htmlFor="doctor_id" value="الطبيب" />
-                                    <select
-                                        id="doctor_id"
-                                        name="doctor_id"
-                                        value={data.doctor_id}
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        onChange={(e) => setData('doctor_id', e.target.value)}
-                                        disabled={!data.clinic_id}
-                                        required
-                                    >
-                                        <option value="">اختر طبيب</option>
-                                        {data.clinic_id
-                                            ? doctors.filter(d => d.clinic_id === Number(data.clinic_id)).map((doctor) => (
-                                                <option key={doctor.id} value={doctor.id}>
-                                                    {doctor.user?.name || doctor.name}
-                                                </option>
-                                            ))
-                                            : doctors.map((doctor) => (
-                                                <option key={doctor.id} value={doctor.id}>
-                                                    {doctor.user?.name || doctor.name}
-                                                </option>
-                                            ))
-                                        }
-                                    </select>
-                                    <InputError message={errors.doctor_id} className="mt-2" />
                                 </div>
 
                                 <div>
@@ -303,10 +255,10 @@ export default function Create({
                         </div>
 
                         {/* معلومات التكلفة */}
-                        <div className="bg-yellow-50 p-4 rounded-lg border-r-4 border-yellow-500">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">معلومات التكلفة</h3>
+                        <div className="bg-yellow-50 p-6 rounded-lg">
+                            <h2 className="text-xl font-semibold text-gray-900 mb-4">معلومات التكلفة</h2>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <InputLabel htmlFor="appointment_cost" value="تكلفة الموعد" />
                                     <TextInput
@@ -346,7 +298,7 @@ export default function Create({
                                         type="number"
                                         name="final_amount"
                                         value={data.final_amount}
-                                        className="mt-1 block w-full bg-gray-100 font-bold text-lg"
+                                        className="mt-1 block w-full bg-gray-100 font-bold"
                                         readOnly
                                     />
                                     <InputError message={errors.final_amount} className="mt-2" />
@@ -354,43 +306,11 @@ export default function Create({
                             </div>
                         </div>
 
-                        {/* الملاحظات وحالة الموعد */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <InputLabel htmlFor="notes" value="الملاحظات" />
-                                <TextInput
-                                    id="notes"
-                                    name="notes"
-                                    value={data.notes}
-                                    className="mt-1 block w-full"
-                                    onChange={(e) => setData('notes', e.target.value)}
-                                />
-                                <InputError message={errors.notes} className="mt-2" />
-                            </div>
-
-                            <div>
-                                <InputLabel htmlFor="status" value="حالة الموعد" />
-                                <select
-                                    id="status"
-                                    name="status"
-                                    value={data.status}
-                                    className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                    onChange={(e) => setData('status', e.target.value)}
-                                >
-                                    <option value="scheduled">مجدول</option>
-                                    <option value="completed">مكتمل</option>
-                                    <option value="cancelled">ملغي</option>
-                                    <option value="no_show">لم يحضر</option>
-                                </select>
-                                <InputError message={errors.status} className="mt-2" />
-                            </div>
-                        </div>
-
                         {/* أزرار العمل */}
-                        <div className="flex justify-center space-x-4 space-x-reverse pt-6 border-t">
+                        <div className="flex justify-center space-x-4 space-x-reverse pt-6">
                             <Button
                                 type="button"
-                                onClick={onClose}
+                                onClick={() => window.history.back()}
                                 className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3"
                             >
                                 إلغاء
@@ -407,6 +327,6 @@ export default function Create({
                     </form>
                 </div>
             </div>
-        </Modal>
+        </div>
     );
 }
