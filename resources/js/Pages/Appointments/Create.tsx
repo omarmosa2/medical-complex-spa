@@ -40,7 +40,7 @@ export default function Create({
 }: CreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         appointment_date: date,
-        appointment_time: time,
+appointment_time: time,
         patient_id: '',
         patient_gender: '',
         patient_age: '',
@@ -101,7 +101,7 @@ export default function Create({
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         
-        // Keep date and time separate - don't convert to datetime
+        // Submit with separate date and time fields
         post(route('appointments.store'), {
             onSuccess: () => onClose(),
         });

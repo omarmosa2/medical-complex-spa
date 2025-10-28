@@ -34,20 +34,20 @@ export default function AddAppointment({
     defaultDate,
     defaultTime
 }: AddAppointmentProps) {
-    // Local state for date and time inputs
-    const [appointmentDate, setAppointmentDate] = useState(defaultDate);
-    const [appointmentTime, setAppointmentTime] = useState(defaultTime);
-
     const { data, setData, post, processing, errors } = useForm({
-        appointment_time: '', // Will be combination of date and time
+        appointment_date: defaultDate,
+        appointment_time: defaultTime,
         patient_id: '',
         patient_gender: '',
         patient_age: '',
+        doctor_id: '',
         clinic_id: '',
         service_id: '',
         appointment_cost: '',
         discount: '',
         final_amount: '',
+        amount_paid: '',
+        status: 'scheduled',
     });
 
     const [selectedPatientData, setSelectedPatientData] = useState<PatientData | null>(null);
@@ -100,14 +100,10 @@ export default function AddAppointment({
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         
-        // Combine date and time into a single datetime string
-        const combinedDateTime = `${appointmentDate}T${appointmentTime}:00`;
-        
-        // Update form data with the combined datetime
-        setData('appointment_time', combinedDateTime);
-        
-        // Submit the form
-        post(route('appointments.store'));
+        // Submit with separate date and time fields
+        post(route('appointments.store'), {
+            onSuccess: () => window.history.back(),
+        });
     };
 
     return (
@@ -127,12 +123,12 @@ export default function AddAppointment({
                                     id="appointment_date"
                                     type="date"
                                     name="appointment_date"
-                                    value={appointmentDate}
+                                    value={data.appointment_date}
                                     className="mt-1 block w-full"
-                                    onChange={(e) => setAppointmentDate(e.target.value)}
+                                    onChange={(e) => setData('appointment_date', e.target.value)}
                                     required
                                 />
-                                <InputError message={errors.appointment_time} className="mt-2" />
+                                <InputError message={errors.appointment_date} className="mt-2" />
                             </div>
 
                             <div>
@@ -141,9 +137,9 @@ export default function AddAppointment({
                                     id="appointment_time"
                                     type="time"
                                     name="appointment_time"
-                                    value={appointmentTime}
+                                    value={data.appointment_time}
                                     className="mt-1 block w-full"
-                                    onChange={(e) => setAppointmentTime(e.target.value)}
+                                    onChange={(e) => setData('appointment_time', e.target.value)}
                                     required
                                 />
                                 <InputError message={errors.appointment_time} className="mt-2" />
@@ -218,6 +214,26 @@ export default function AddAppointment({
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
+                                    <InputLabel htmlFor="doctor_id" value="الطبيب" />
+                                    <select
+                                        id="doctor_id"
+                                        name="doctor_id"
+                                        value={data.doctor_id}
+                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        onChange={(e) => setData('doctor_id', e.target.value)}
+                                        required
+                                    >
+                                        <option value="">اختر طبيب</option>
+                                        {doctors.map((doctor) => (
+                                            <option key={doctor.id} value={doctor.id}>
+                                                {doctor.user?.name || `Doctor #${doctor.id}`}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError message={errors.doctor_id} className="mt-2" />
+                                </div>
+
+                                <div>
                                     <InputLabel htmlFor="clinic_id" value="العيادة" />
                                     <select
                                         id="clinic_id"
@@ -263,7 +279,7 @@ export default function AddAppointment({
                         <div className="bg-yellow-50 p-6 rounded-lg">
                             <h2 className="text-xl font-semibold text-gray-900 mb-4">معلومات التكلفة</h2>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <InputLabel htmlFor="appointment_cost" value="تكلفة الموعد" />
                                     <TextInput
@@ -278,6 +294,22 @@ export default function AddAppointment({
                                         required
                                     />
                                     <InputError message={errors.appointment_cost} className="mt-2" />
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="amount_paid" value="المبلغ المدفوع" />
+                                    <TextInput
+                                        id="amount_paid"
+                                        type="number"
+                                        name="amount_paid"
+                                        value={data.amount_paid}
+                                        className="mt-1 block w-full"
+                                        onChange={(e) => setData('amount_paid', e.target.value)}
+                                        min="0"
+                                        step="0.01"
+                                        required
+                                    />
+                                    <InputError message={errors.amount_paid} className="mt-2" />
                                 </div>
 
                                 <div>

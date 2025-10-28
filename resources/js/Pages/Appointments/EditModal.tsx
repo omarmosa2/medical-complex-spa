@@ -13,6 +13,7 @@ export default function EditModal({ show, onClose, appointment, patients, doctor
         doctor_id: '',
         service_id: '',
         clinic_id: '',
+        appointment_date: '',
         appointment_time: '',
         status: 'scheduled',
         notes: '',
@@ -26,12 +27,28 @@ export default function EditModal({ show, onClose, appointment, patients, doctor
 
     useEffect(() => {
         if (appointment) {
+            // Handle both old and new appointment data structure
+            let appointmentDate = '';
+            let appointmentTime = '';
+            
+            if (appointment.appointment_date && appointment.appointment_time) {
+                // New structure with separate date and time
+                appointmentDate = appointment.appointment_date;
+                appointmentTime = appointment.appointment_time;
+            } else if (appointment.appointment_time) {
+                // Old structure with combined datetime
+                const parts = appointment.appointment_time.split(' ');
+                appointmentDate = parts[0] || '';
+                appointmentTime = parts[1]?.slice(0, 5) || '';
+            }
+            
             setData({
                 patient_id: appointment.patient_id.toString(),
                 doctor_id: appointment.doctor_id.toString(),
                 service_id: appointment.service_id.toString(),
                 clinic_id: appointment.clinic_id?.toString() || '',
-                appointment_time: appointment.appointment_time.slice(0, 16), // Format for datetime-local
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
                 status: appointment.status,
                 notes: appointment.notes || '',
                 amount_paid: appointment.amount_paid,
@@ -66,7 +83,7 @@ export default function EditModal({ show, onClose, appointment, patients, doctor
                             onChange={(e) => setData('patient_id', e.target.value)}
                         >
                             <option value="">Select a patient</option>
-                            {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                            {patients.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}
                         </select>
                         <InputError message={errors.patient_id} className="mt-2" />
                     </div>
@@ -95,7 +112,7 @@ export default function EditModal({ show, onClose, appointment, patients, doctor
                             disabled={!data.clinic_id}
                         >
                             <option value="">Select a doctor</option>
-                            {filteredDoctors.map(d => <option key={d.id} value={d.id}>{d.user.name}</option>)}
+                                {filteredDoctors.map(d => <option key={d.id} value={d.id}>{d.user?.name || d.name || `Doctor #${d.id}`}</option>)}
                         </select>
                         <InputError message={errors.doctor_id} className="mt-2" />
                     </div>
@@ -113,18 +130,34 @@ export default function EditModal({ show, onClose, appointment, patients, doctor
                         </select>
                         <InputError message={errors.service_id} className="mt-2" />
                     </div>
-                    <div>
-                        <InputLabel htmlFor="appointment_time" value="Appointment Time" />
-                        <TextInput
-                            id="appointment_time"
-                            type="datetime-local"
-                            name="appointment_time"
-                            value={data.appointment_time}
-                            className="mt-1 block w-full"
-                            onChange={(e) => setData('appointment_time', e.target.value)}
-                            required
-                        />
-                        <InputError message={errors.appointment_time} className="mt-2" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <InputLabel htmlFor="appointment_date" value="Appointment Date" />
+                            <TextInput
+                                id="appointment_date"
+                                type="date"
+                                name="appointment_date"
+                                value={data.appointment_date}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('appointment_date', e.target.value)}
+                                required
+                            />
+                            <InputError message={errors.appointment_date} className="mt-2" />
+                        </div>
+
+                        <div>
+                            <InputLabel htmlFor="appointment_time" value="Appointment Time" />
+                            <TextInput
+                                id="appointment_time"
+                                type="time"
+                                name="appointment_time"
+                                value={data.appointment_time}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('appointment_time', e.target.value)}
+                                required
+                            />
+                            <InputError message={errors.appointment_time} className="mt-2" />
+                        </div>
                     </div>
                     <div>
                         <InputLabel htmlFor="status" value="Status" />

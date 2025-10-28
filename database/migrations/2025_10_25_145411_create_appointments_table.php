@@ -17,16 +17,14 @@ return new class extends Migration
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->foreignId('receptionist_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->dateTime('appointment_time');
+            $table->date('appointment_date'); // Column for date only
+            $table->time('appointment_time'); // Column for time only
             $table->enum('status', ['scheduled', 'completed', 'cancelled', 'no_show']);
             $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('appointments');

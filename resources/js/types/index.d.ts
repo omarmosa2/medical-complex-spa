@@ -52,7 +52,8 @@ export type Appointment = {
     service_id: number;
     clinic_id: number | null;
     receptionist_id: number | null;
-    appointment_time: string;
+    appointment_date: string; // New field for date only
+    appointment_time: string; // New field for time only
     status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
     notes: string | null;
     amount_paid: number;

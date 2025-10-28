@@ -27,14 +27,26 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
         ? appointments.filter(app => app.clinic_id === parseInt(selectedClinic))
         : appointments;
 
-    const events = filteredAppointments.map(app => ({
-        id: app.id.toString(),
-        title: `${app.patient?.full_name || 'Unknown'} - ${app.service?.name || 'Unknown'}`,
-        start: app.appointment_time,
-        extendedProps: {
-            clinic: app.clinic?.name,
+    const events = filteredAppointments.map(app => {
+        // Combine date and time for calendar display
+        let startDateTime = '';
+        if (app.appointment_date && app.appointment_time) {
+            // New structure with separate date and time
+            startDateTime = `${app.appointment_date} ${app.appointment_time}:00`;
+        } else if (app.appointment_time) {
+            // Old structure with combined datetime
+            startDateTime = app.appointment_time;
         }
-    }));
+        
+        return {
+            id: app.id.toString(),
+            title: `${app.patient?.full_name || 'Unknown'} - ${app.service?.name || 'Unknown'}`,
+            start: startDateTime,
+            extendedProps: {
+                clinic: app.clinic?.name,
+            }
+        };
+    });
 
     function getStatusColor(status: Appointment['status']) {
         switch (status) {
