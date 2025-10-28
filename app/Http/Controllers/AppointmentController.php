@@ -25,16 +25,70 @@ class AppointmentController extends Controller
     }
 
     /**
-      * Display a listing of the resource.
-      */
-    public function index()
+       * Display a listing of the resource.
+       */
+    public function index(\Illuminate\Http\Request $request)
     {
+        $query = Appointment::with(['patient', 'doctor.user', 'service', 'clinic']);
+
+        // Handle search
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('patient', function($patientQuery) use ($search) {
+                    $patientQuery->where('full_name', 'like', "%{$search}%");
+                })->orWhereHas('doctor.user', function($doctorQuery) use ($search) {
+                    $doctorQuery->where('name', 'like', "%{$search}%");
+                })->orWhereHas('service', function($serviceQuery) use ($search) {
+                    $serviceQuery->where('name', 'like', "%{$search}%");
+                })->orWhere('appointment_date', 'like', "%{$search}%")
+                  ->orWhere('appointment_time', 'like', "%{$search}%");
+            });
+        }
+
+        // Handle filters
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+        if ($request->has('clinic_id') && !empty($request->clinic_id)) {
+            $query->where('clinic_id', $request->clinic_id);
+        }
+        if ($request->has('doctor_id') && !empty($request->doctor_id)) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+        if ($request->has('service_id') && !empty($request->service_id)) {
+            $query->where('service_id', $request->service_id);
+        }
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('appointment_date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('appointment_date', '<=', $request->date_to);
+        }
+
+        // Sort by date and time
+        $query->orderBy('appointment_date', 'desc')
+              ->orderBy('appointment_time', 'desc');
+
+        // Paginate results
+        $appointments = $query->paginate(15);
+
+        // Get filter options
+        $filterOptions = [
+            'statuses' => ['scheduled', 'completed', 'cancelled', 'no_show'],
+            'clinics' => \App\Models\Clinic::select('id', 'name')->get(),
+            'doctors' => Doctor::with('user')->select('id', 'user_id')->get(),
+            'services' => Service::select('id', 'name')->get(),
+        ];
+
         return Inertia::render('Appointments/Index', [
-            'appointments' => Appointment::with(['patient', 'doctor.user', 'service', 'clinic'])->get(),
-            'patients' => Patient::all(),
+            'appointments' => $appointments,
+            'patients' => Patient::select('id', 'full_name', 'phone')->get(),
             'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
             'clinics' => \App\Models\Clinic::all(),
+            'filters' => $request->only(['search', 'status', 'clinic_id', 'doctor_id', 'service_id', 'date_from', 'date_to']),
+            'filterOptions' => $filterOptions,
         ]);
     }
 
