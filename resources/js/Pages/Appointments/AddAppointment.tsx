@@ -26,17 +26,20 @@ interface PatientData {
     address?: string;
 }
 
-export default function AddAppointment({ 
-    patients, 
-    doctors, 
-    services, 
-    clinics, 
-    defaultDate, 
-    defaultTime 
+export default function AddAppointment({
+    patients,
+    doctors,
+    services,
+    clinics,
+    defaultDate,
+    defaultTime
 }: AddAppointmentProps) {
+    // Local state for date and time inputs
+    const [appointmentDate, setAppointmentDate] = useState(defaultDate);
+    const [appointmentTime, setAppointmentTime] = useState(defaultTime);
+
     const { data, setData, post, processing, errors } = useForm({
-        appointment_date: defaultDate,
-        appointment_time: defaultTime,
+        appointment_time: '', // Will be combination of date and time
         patient_id: '',
         patient_gender: '',
         patient_age: '',
@@ -97,11 +100,13 @@ export default function AddAppointment({
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         
-        // تحويل التاريخ والوقت إلى تنسيق واحد
-        const appointmentDateTime = `${data.appointment_date}T${data.appointment_time}:00`;
+        // Combine date and time into a single datetime string
+        const combinedDateTime = `${appointmentDate}T${appointmentTime}:00`;
         
-        setData('appointment_time', appointmentDateTime);
+        // Update form data with the combined datetime
+        setData('appointment_time', combinedDateTime);
         
+        // Submit the form
         post(route('appointments.store'));
     };
 
@@ -122,12 +127,12 @@ export default function AddAppointment({
                                     id="appointment_date"
                                     type="date"
                                     name="appointment_date"
-                                    value={data.appointment_date}
+                                    value={appointmentDate}
                                     className="mt-1 block w-full"
-                                    onChange={(e) => setData('appointment_date', e.target.value)}
+                                    onChange={(e) => setAppointmentDate(e.target.value)}
                                     required
                                 />
-                                <InputError message={errors.appointment_date} className="mt-2" />
+                                <InputError message={errors.appointment_time} className="mt-2" />
                             </div>
 
                             <div>
@@ -136,9 +141,9 @@ export default function AddAppointment({
                                     id="appointment_time"
                                     type="time"
                                     name="appointment_time"
-                                    value={data.appointment_time}
+                                    value={appointmentTime}
                                     className="mt-1 block w-full"
-                                    onChange={(e) => setData('appointment_time', e.target.value)}
+                                    onChange={(e) => setAppointmentTime(e.target.value)}
                                     required
                                 />
                                 <InputError message={errors.appointment_time} className="mt-2" />

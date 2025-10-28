@@ -101,22 +101,7 @@ export default function Create({
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         
-        // تحويل التاريخ والوقت إلى تنسيق واحد
-        const appointmentDateTime = `${data.appointment_date}T${data.appointment_time}:00`;
-        
-        // تحديث البيانات في form state
-        setData({
-            ...data,
-            appointment_time: appointmentDateTime,
-            doctor_id: data.doctor_id,
-            service_id: data.service_id,
-            clinic_id: data.clinic_id,
-            status: data.status,
-            notes: data.notes,
-            amount_paid: parseFloat(data.final_amount) || 0,
-            discount: parseFloat(data.discount) || 0,
-        });
-        
+        // Keep date and time separate - don't convert to datetime
         post(route('appointments.store'), {
             onSuccess: () => onClose(),
         });
