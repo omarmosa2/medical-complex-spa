@@ -97,15 +97,19 @@ class PatientController extends Controller
      */
     public function store(StorePatientRequest $request)
     {
-        $patient = Patient::create($request->validated());
+        try {
+            $patient = Patient::create($request->validated());
 
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'created_patient',
-            'description' => "Created patient: {$patient->full_name}",
-        ]);
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'created_patient',
+                'description' => "Created patient: {$patient->full_name}",
+            ]);
 
-        return redirect()->route('patients.index');
+            return redirect()->route('patients.index')->with('success', 'Patient created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to create patient: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -152,18 +156,15 @@ class PatientController extends Controller
                 return response()->json(['error' => 'Patient not found'], 404);
             }
 
-            // Calculate age from date_of_birth
-            $age = now()->diffInYears($patient->date_of_birth);
-
             return response()->json([
                 'id' => $patient->id,
-                'name' => $patient->name, // استخدام 'name' بدلاً من 'full_name'
-                'full_name' => $patient->name, // إضافة أيضاً full_name للتوافق
+                'full_name' => $patient->full_name,
                 'gender' => $patient->gender,
-                'age' => $age,
-                'date_of_birth' => $patient->date_of_birth,
+                'age' => $patient->age,
                 'phone' => $patient->phone,
-                'address' => $patient->address,
+                'residence' => $patient->residence,
+                'email' => $patient->email,
+                'notes' => $patient->notes,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);

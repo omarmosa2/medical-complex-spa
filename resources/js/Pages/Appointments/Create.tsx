@@ -40,7 +40,7 @@ export default function Create({
 }: CreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         appointment_date: date,
-appointment_time: time,
+        appointment_time: time,
         patient_id: '',
         patient_gender: '',
         patient_age: '',
@@ -101,7 +101,7 @@ appointment_time: time,
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         
-        // Submit with separate date and time fields
+        // Keep date and time separate - don't convert to datetime
         post(route('appointments.store'), {
             onSuccess: () => onClose(),
         });
@@ -342,6 +342,24 @@ appointment_time: time,
                         {/* الملاحظات وحالة الموعد */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
+                                <InputLabel htmlFor="status" value="حالة الموعد" />
+                                <select
+                                    id="status"
+                                    name="status"
+                                    value={data.status}
+                                    className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                    onChange={(e) => setData('status', e.target.value)}
+                                    required
+                                >
+                                    <option value="scheduled">مجدول</option>
+                                    <option value="completed">مكتمل</option>
+                                    <option value="cancelled">ملغي</option>
+                                    <option value="no_show">لم يحضر</option>
+                                </select>
+                                <InputError message={errors.status} className="mt-2" />
+                            </div>
+
+                            <div>
                                 <InputLabel htmlFor="notes" value="الملاحظات" />
                                 <TextInput
                                     id="notes"
@@ -351,23 +369,6 @@ appointment_time: time,
                                     onChange={(e) => setData('notes', e.target.value)}
                                 />
                                 <InputError message={errors.notes} className="mt-2" />
-                            </div>
-
-                            <div>
-                                <InputLabel htmlFor="status" value="حالة الموعد" />
-                                <select
-                                    id="status"
-                                    name="status"
-                                    value={data.status}
-                                    className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                    onChange={(e) => setData('status', e.target.value)}
-                                >
-                                    <option value="scheduled">مجدول</option>
-                                    <option value="completed">مكتمل</option>
-                                    <option value="cancelled">ملغي</option>
-                                    <option value="no_show">لم يحضر</option>
-                                </select>
-                                <InputError message={errors.status} className="mt-2" />
                             </div>
                         </div>
 

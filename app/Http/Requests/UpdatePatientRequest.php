@@ -25,11 +25,21 @@ class UpdatePatientRequest extends FormRequest
         return [
             'full_name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
-            'age' => 'required|integer|min:1|max:150',
+            'age' => 'required|integer|min:0|max:150',
             'residence' => 'required|string|max:255',
             'phone' => ['nullable', 'string', Rule::unique('patients')->ignore($this->patient)],
             'email' => ['nullable', 'email', Rule::unique('patients')->ignore($this->patient)],
             'notes' => 'nullable|string',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     */
+    public function attributes(): array
+    {
+        return [
+            'full_name' => 'full name',
         ];
     }
 }

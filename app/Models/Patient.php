@@ -11,6 +11,18 @@ class Patient extends Model
 
     protected $guarded = [];
 
+    // Accessor for full_name (returns the actual database field)
+    public function getFullNameAttribute()
+    {
+        return $this->attributes['full_name'] ?? null;
+    }
+
+    // Setter for full_name
+    public function setFullNameAttribute($value)
+    {
+        $this->attributes['full_name'] = $value;
+    }
+
     public function appointments()
     {
         return $this->hasMany(Appointment::class);

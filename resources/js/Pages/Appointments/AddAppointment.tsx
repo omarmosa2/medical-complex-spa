@@ -46,7 +46,7 @@ export default function AddAppointment({
         appointment_cost: '',
         discount: '',
         final_amount: '',
-        amount_paid: '',
+        notes: '',
         status: 'scheduled',
     });
 
@@ -297,22 +297,6 @@ export default function AddAppointment({
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="amount_paid" value="المبلغ المدفوع" />
-                                    <TextInput
-                                        id="amount_paid"
-                                        type="number"
-                                        name="amount_paid"
-                                        value={data.amount_paid}
-                                        className="mt-1 block w-full"
-                                        onChange={(e) => setData('amount_paid', e.target.value)}
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                    />
-                                    <InputError message={errors.amount_paid} className="mt-2" />
-                                </div>
-
-                                <div>
                                     <InputLabel htmlFor="discount" value="الخصم (%)" />
                                     <TextInput
                                         id="discount"
@@ -340,7 +324,38 @@ export default function AddAppointment({
                                     />
                                     <InputError message={errors.final_amount} className="mt-2" />
                                 </div>
+
+                                <div>
+                                    <InputLabel htmlFor="status" value="حالة الموعد" />
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        value={data.status}
+                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        onChange={(e) => setData('status', e.target.value)}
+                                        required
+                                    >
+                                        <option value="scheduled">مجدول</option>
+                                        <option value="completed">مكتمل</option>
+                                        <option value="cancelled">ملغي</option>
+                                        <option value="no_show">لم يحضر</option>
+                                    </select>
+                                    <InputError message={errors.status} className="mt-2" />
+                                </div>
                             </div>
+                        </div>
+
+                        {/* الملاحظات */}
+                        <div>
+                            <InputLabel htmlFor="notes" value="الملاحظات" />
+                            <TextInput
+                                id="notes"
+                                name="notes"
+                                value={data.notes}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('notes', e.target.value)}
+                            />
+                            <InputError message={errors.notes} className="mt-2" />
                         </div>
 
                         {/* أزرار العمل */}

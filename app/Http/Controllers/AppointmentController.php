@@ -12,9 +12,9 @@ use App\Models\MedicalRecordTemplate;
 use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\Transaction;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class AppointmentController extends Controller
@@ -44,11 +44,11 @@ class AppointmentController extends Controller
     public function create()
     {
         // Check if we have patients first
-        $patients = Patient::select('id', 'full_name', 'phone', 'date_of_birth', 'gender', 'address')->get();
+        $patients = Patient::select('id', 'name', 'phone', 'date_of_birth', 'gender', 'address')->get();
         
         if ($patients->isEmpty()) {
             return Inertia::render('Appointments/AddAppointment', [
-                'patients' => $patients,
+                'patients' => [],
                 'doctors' => Doctor::with(['user', 'clinic'])->get(),
                 'services' => Service::all(),
                 'clinics' => \App\Models\Clinic::all(),
@@ -58,76 +58,79 @@ class AppointmentController extends Controller
             ]);
         }
 
-        return Inertia::render('Appointments/AddAppointment', [
-            'patients' => $patients,
+        return Inertia::render('Appointments/TestApi', [
+            'patients' => $patients->map(function($patient) {
+                return [
+                    'id' => $patient->id,
+                    'full_name' => $patient->name,
+                ];
+            }),
             'doctors' => Doctor::with(['user', 'clinic'])->get(),
             'services' => Service::all(),
             'clinics' => \App\Models\Clinic::all(),
-            'defaultDate' => now()->format('Y-m-d'),
-            'defaultTime' => now()->format('H:i'),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(StoreAppointmentRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $request->validate([
-            'doctor_id' => 'required|exists:doctors,id',
-            'patient_id' => 'required|exists:patients,id',
-            'service_id' => 'required|exists:services,id',
-            'clinic_id' => 'nullable|exists:clinics,id',
-            'appointment_time' => 'required|date',
-            'status' => 'required|string|in:scheduled,completed,cancelled,no_show',
-            'notes' => 'nullable|string',
-            'amount_paid' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0|max:100',
-        ]);
+        Log::info('Starting appointment store process...');
+        Log::info('Request data:', $request->all());
 
-        DB::transaction(function () use ($request) {
-            $appointment = Appointment::create($request->all() + ['receptionist_id' => Auth::id()]);
+        try {
+            // Simple validation - only check required fields
+            $validatedData = [
+                'patient_id' => $request->patient_id,
+                'doctor_id' => $request->doctor_id,
+                'service_id' => $request->service_id,
+                'appointment_date' => $request->appointment_date,
+                'appointment_time' => $request->appointment_time,
+                'status' => $request->status ?? 'scheduled',
+            ];
 
-            // 1. Create Payment Record
+            // Add optional fields if they exist
+            if ($request->has('clinic_id')) {
+                $validatedData['clinic_id'] = $request->clinic_id;
+            }
+            if ($request->has('notes')) {
+                $validatedData['notes'] = $request->notes;
+            }
+            if ($request->has('discount')) {
+                $validatedData['discount'] = $request->discount;
+            }
+            if ($request->has('final_amount')) {
+                $validatedData['amount_paid'] = $request->final_amount;
+            } elseif ($request->has('appointment_cost')) {
+                $validatedData['amount_paid'] = $request->appointment_cost;
+            }
+
+            // Add receptionist ID
+            $validatedData['receptionist_id'] = Auth::id();
+
+            Log::info('Validated data to save:', $validatedData);
+
+            // Create appointment
+            $appointment = Appointment::create($validatedData);
+            Log::info('Appointment created successfully with ID:', ['id' => $appointment->id]);
+
+            // Create basic payment record
             $appointment->payment()->create([
-                'amount' => $request->amount_paid,
+                'amount' => $validatedData['amount_paid'] ?? 0,
                 'payment_date' => now(),
-                'payment_method' => 'cash', // Assuming cash for now
+                'payment_method' => 'cash',
                 'status' => 'completed',
             ]);
 
-            // 2. Calculate Shares
-            $doctor = Doctor::with('user')->find($request->doctor_id);
-            $doctor_percentage = $doctor->user->doctor_percentage ?? 0;
-            $doctor_share = ($request->amount_paid * $doctor_percentage) / 100;
-            $clinic_profit = $request->amount_paid - $doctor_share;
+            Log::info('Payment record created successfully');
 
-            // 3. Create Transaction for Doctor
-            Transaction::create([
-                'user_id' => $doctor->user->id,
-                'appointment_id' => $appointment->id,
-                'type' => 'credit',
-                'amount' => $doctor_share,
-                'description' => "Doctor's share for appointment #{$appointment->id}",
-            ]);
+            return redirect()->route('appointments.index')->with('success', 'تم حفظ الموعد بنجاح');
 
-            // 4. Create Transaction for Clinic Profit
-            Transaction::create([
-                'user_id' => Auth::id(), // Associated with the receptionist who booked
-                'appointment_id' => $appointment->id,
-                'type' => 'credit',
-                'amount' => $clinic_profit,
-                'description' => "Clinic profit for appointment #{$appointment->id}",
-            ]);
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'action' => 'created_appointment',
-                'description' => "Created appointment for patient {$appointment->patient->full_name} with doctor {$doctor->user->name}",
-            ]);
-        });
-
-        return redirect()->route('appointments.index');
+        } catch (\Exception $e) {
+            Log::error('Error creating appointment:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->withInput()->withErrors(['error' => 'خطأ في حفظ الموعد: ' . $e->getMessage()]);
+        }
     }
 
     /**

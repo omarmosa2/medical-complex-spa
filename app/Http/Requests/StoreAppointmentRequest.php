@@ -25,8 +25,14 @@ class StoreAppointmentRequest extends FormRequest
             'patient_id' => 'required|exists:patients,id',
             'doctor_id' => 'required|exists:doctors,id',
             'service_id' => 'required|exists:services,id',
-            'appointment_time' => 'required|date',
+            'clinic_id' => 'nullable|exists:clinics,id',
+            'appointment_date' => 'required|date',
+            'appointment_time' => 'required',
+            'status' => 'nullable|string|in:scheduled,completed,cancelled,no_show',
             'notes' => 'nullable|string',
+            'appointment_cost' => 'nullable|numeric|min:0',
+            'final_amount' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
         ];
     }
 }

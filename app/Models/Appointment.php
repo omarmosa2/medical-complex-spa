@@ -21,12 +21,12 @@ class Appointment extends Model
         'service_id',
         'clinic_id',
         'receptionist_id',
+        'appointment_date',
         'appointment_time',
         'notes',
         'status',
         'amount_paid',
         'discount',
-        'total_amount',
     ];
 
     public function patient()
