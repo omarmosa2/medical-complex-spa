@@ -197,7 +197,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                 </header>
 
                 {/* Main Content */}
-                <main className={`flex-1 relative overflow-y-auto focus:outline-none p-6 ${themeClasses.bgPrimary}`}>
+                <main className={`flex-1 relative overflow-y-auto focus:outline-none ${themeClasses.bgPrimary}`}>
                     {children}
                 </main>
             </div>

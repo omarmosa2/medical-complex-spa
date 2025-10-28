@@ -1,4 +1,4 @@
-import { PageProps, Paginated } from '@/types';
+import { PageProps } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
@@ -25,7 +25,7 @@ const StatCard = ({ title, value, icon: Icon }: StatCardProps) => (
             <div className="flex items-center justify-between">
                 <div className="text-center flex-1">
                     <Icon className="w-8 h-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
+                    <p className="text-sm text-muted-foreground">{title}</p>
                     <p className="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-2">
                         {value}
                     </p>
@@ -35,7 +35,7 @@ const StatCard = ({ title, value, icon: Icon }: StatCardProps) => (
     </motion.div>
 );
 
-export default function Index({ auth, patients, stats, filters, filterOptions }: PageProps<{ patients: Paginated<any>, stats: any, filters: any, filterOptions: any }>) {
+export default function Index({ auth, patients, stats, filters, filterOptions }: PageProps<{ patients: any, stats: any, filters: any, filterOptions: any }>) {
     const filterConfig = [
         { key: 'full_name', label: 'الاسم الثلاثي', options: filterOptions.full_names || [] },
         { key: 'gender', label: 'الجنس', options: filterOptions.genders || [] },
@@ -49,15 +49,15 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
         <AuthenticatedLayout
             header={
                 <div className="flex justify-between items-center" dir="rtl">
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">المرضى</h2>
+                    <h2 className="font-semibold text-xl text-foreground leading-tight">المرضى</h2>
                 </div>
             }
         >
             <Head title="المرضى" />
 
-            <div className="p-8 space-y-10 bg-gray-50 dark:bg-gray-900 min-h-screen" dir="rtl">
+            <div className="p-6" dir="rtl">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     {[
                         { title: "إجمالي المرضى", value: stats.total_patients, icon: UserGroupIcon },
                         { title: "المرضى ذوي الحجوزات", value: stats.patients_with_appointments, icon: CalendarDaysIcon },
@@ -68,39 +68,41 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
                 </div>
 
                 {/* Search and Filters */}
-                <SearchAndFilter
-                    searchPlaceholder="ابحث في الاسم، الهاتف، الإيميل، أو مكان الإقامة"
-                    filters={filterConfig}
-                    currentFilters={filters}
-                    routeName="patients.index"
-                    debounceMs={300}
-                />
+                <div className="mb-6">
+                    <SearchAndFilter
+                        searchPlaceholder="ابحث في الاسم، الهاتف، الإيميل، أو مكان الإقامة"
+                        filters={filterConfig}
+                        currentFilters={filters}
+                        routeName="patients.index"
+                        debounceMs={300}
+                    />
+                </div>
 
                 {/* Table */}
-                <Card className="border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl overflow-hidden">
+                <Card className="border border-border shadow-lg rounded-xl overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border-collapse">
-                            <thead className="bg-gray-50 dark:bg-gray-700">
+                        <table className="min-w-full divide-y divide-border">
+                            <thead className="bg-muted">
                                 <tr>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         #
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         الاسم الثلاثي
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         الجنس
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         العمر
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         مكان الإقامة
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         الهاتف
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                         الإيميل
                                     </th>
                                     <th scope="col" className="relative px-6 py-3 text-center">
@@ -108,50 +110,49 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="bg-card divide-y divide-border">
                                 {patients.data.length > 0 ? (
                                     patients.data.map((patient: any, index: number) => {
                                         const sequentialNumber = (patients.current_page - 1) * patients.per_page + index + 1;
                                         return (
-                                            <tr key={patient.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'}`}>
-                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900 dark:text-gray-100">{sequentialNumber}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900 dark:text-gray-100">{patient.full_name}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">{patient.gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">{patient.age}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">{patient.residence}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">{patient.phone}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-400">{patient.email}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div className="flex justify-center space-x-2">
-                                                    <Link href={route('patients.show', patient.id)} className="text-blue-600 hover:text-blue-900 p-1 rounded" title="عرض">
-                                                        <EyeIcon className="w-5 h-5" />
-                                                    </Link>
-                                                    <Link href={route('patients.edit', patient.id)} className="text-green-600 hover:text-green-900 p-1 rounded" title="تعديل">
-                                                        <PencilIcon className="w-5 h-5" />
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => {
-                                                            if (confirm('هل أنت متأكد من حذف هذا المريض؟')) {
-                                                                router.delete(route('patients.destroy', patient.id));
-                                                            }
-                                                        }}
-                                                        className="text-red-600 hover:text-red-900 p-1 rounded" title="حذف"
-                                                    >
-                                                        <TrashIcon className="w-5 h-5" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <tr key={patient.id} className="hover:bg-muted transition-colors duration-200">
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-foreground">{sequentialNumber}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-foreground">{patient.full_name}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">{patient.gender === 'male' ? 'ذكر' : 'أنثى'}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">{patient.age}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">{patient.residence}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">{patient.phone}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-muted-foreground">{patient.email}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                                    <div className="flex justify-center space-x-2">
+                                                        <Link href={route('patients.show', patient.id)} className="text-primary hover:text-primary hover:bg-primary/10 p-1 rounded" title="عرض">
+                                                            <EyeIcon className="w-5 h-5" />
+                                                        </Link>
+                                                        <Link href={route('patients.edit', patient.id)} className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 p-1 rounded" title="تعديل">
+                                                            <PencilIcon className="w-5 h-5" />
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => {
+                                                                if (confirm('هل أنت متأكد من حذف هذا المريض؟')) {
+                                                                    router.delete(route('patients.destroy', patient.id));
+                                                                }
+                                                            }}
+                                                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded" title="حذف">
+                                                            <TrashIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         );
                                     })
                                 ) : (
                                     <tr>
                                         <td colSpan={8} className="text-center py-12">
-                                            <UsersIcon className="mx-auto h-12 w-12 text-gray-400" />
-                                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            <UsersIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                                            <h3 className="mt-2 text-sm font-medium text-foreground">
                                                 {Object.keys(filters).length > 0 ? 'لا يوجد بيانات مطابقة' : 'لا توجد مرضى'}
                                             </h3>
-                                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            <p className="mt-1 text-sm text-muted-foreground">
                                                 {Object.keys(filters).length > 0 ? 'جرب تعديل معايير البحث أو الفلترة.' : 'ابدأ بإنشاء مريض جديد.'}
                                             </p>
                                             <div className="mt-6">
@@ -171,17 +172,73 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
                 </Card>
 
                 {/* Pagination */}
-                <div className="flex justify-center">
-                    {patients.links && patients.links.map((link: any, index: number) => (
-                        <Link
-                            key={index}
-                            href={link.url || '#'}
-                            className={`px-3 py-2 mx-1 text-sm font-medium rounded-md ${link.active ? 'bg-primary-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                            preserveState
-                        />
-                    ))}
-                </div>
+                {patients.data.length > 0 && (
+                    <div className="mt-6 flex items-center justify-between border-t border-border bg-card px-4 py-3 sm:px-6">
+                        <div className="flex flex-1 justify-between sm:hidden">
+                            {patients.links && patients.links.map((link: any, index: number) => (
+                                link.url ? (
+                                    <Link
+                                        key={index}
+                                        href={link.url}
+                                        className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                                            link.active
+                                                ? 'z-10 bg-primary/10 border-primary text-primary'
+                                                : 'bg-card border-border text-muted-foreground hover:bg-muted'
+                                        }`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ) : null
+                            ))}
+                        </div>
+                        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                            <div>
+                                <p className="text-sm text-muted-foreground">
+                                    عرض{' '}
+                                    <span className="font-medium text-foreground">
+                                        {((patients.current_page - 1) * patients.per_page) + 1}
+                                    </span>{' '}
+                                    إلى{' '}
+                                    <span className="font-medium text-foreground">
+                                        {Math.min(patients.current_page * patients.per_page, patients.total)}
+                                    </span>{' '}
+                                    من أصل{' '}
+                                    <span className="font-medium text-foreground">{patients.total}</span>{' '}
+                                    نتيجة
+                                </p>
+                            </div>
+                            <div>
+                                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                    {patients.links && patients.links.map((link: any, index: number) => (
+                                        link.url ? (
+                                            <Link
+                                                key={index}
+                                                href={link.url}
+                                                className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                                                    index === 0
+                                                        ? 'rounded-l-md'
+                                                        : index === patients.links.length - 1
+                                                        ? 'rounded-r-md'
+                                                        : ''
+                                                } ${
+                                                    link.active
+                                                        ? 'z-10 bg-primary/10 border-primary text-primary'
+                                                        : 'bg-card border-border text-muted-foreground hover:bg-muted'
+                                                }`}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        ) : (
+                                            <span
+                                                key={index}
+                                                className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-muted-foreground bg-card border border-border"
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        )
+                                    ))}
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );
