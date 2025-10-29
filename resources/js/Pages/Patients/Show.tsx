@@ -30,7 +30,15 @@ export default function Show({ auth, patient }: PageProps<{ patient: Patient }>)
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">ملف المريض: {patient.full_name}</h2>}
+            header={
+                <div className="flex items-center justify-between">
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">ملف المريض: {patient.full_name}</h2>
+                    <div className="flex items-center gap-2">
+                        <a href={route('patients.exportPdf', patient.id)} target="_blank" rel="noreferrer" className="px-3 py-1 rounded-md bg-primary/10 text-primary hover:bg-primary/20">تصدير PDF</a>
+                        <a href={route('patients.exportPdf', patient.id)} target="_blank" rel="noreferrer" className="px-3 py-1 rounded-md bg-muted text-foreground hover:bg-muted/80">طباعة</a>
+                    </div>
+                </div>
+            }
         >
             <Head title={patient.full_name} />
 

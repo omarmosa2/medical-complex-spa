@@ -65,6 +65,25 @@ class SalaryController extends Controller
 
         return back();
     }
+
+    public function destroyMonthBonuses(Request $request)
+    {
+        $request->validate([
+            'doctor_id' => ['required', 'exists:doctors,id'],
+            'month' => ['required', 'date_format:Y-m'],
+        ]);
+
+        $this->authorize('viewAny', Doctor::class);
+
+        $start = Carbon::createFromFormat('Y-m', $request->month)->startOfMonth();
+        $end = (clone $start)->endOfMonth();
+
+        DoctorBonus::where('doctor_id', $request->doctor_id)
+            ->whereBetween('created_at', [$start, $end])
+            ->delete();
+
+        return back();
+    }
 }
 
 

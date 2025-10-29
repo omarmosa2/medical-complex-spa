@@ -9,6 +9,7 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PatientController extends Controller
 {
@@ -122,6 +123,13 @@ class PatientController extends Controller
         return Inertia::render('Patients/Show', [
             'patient' => $patient,
         ]);
+    }
+
+    public function exportPdf(Patient $patient)
+    {
+        $patient->load('appointments.service', 'appointments.doctor.user', 'medicalRecords.doctor.user', 'documents.uploadedByUser');
+        $pdf = Pdf::loadView('patient-pdf', [ 'patient' => $patient ]);
+        return $pdf->stream('patient-'.$patient->id.'.pdf');
     }
 
     /**

@@ -2,6 +2,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import Card from '@/Components/Card';
+import { Link, router } from '@inertiajs/react';
+import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import Button from '@/Components/Button';
@@ -67,6 +69,7 @@ export default function Index({ auth, doctors, month }: PageProps<{ doctors: any
                                         <th className="px-4 py-2 text-xs text-muted-foreground">حصة الطبيب</th>
                                         <th className="px-4 py-2 text-xs text-muted-foreground">مكافآت</th>
                                         <th className="px-4 py-2 text-xs text-muted-foreground">الإجمالي</th>
+                                        <th className="px-4 py-2 text-xs text-muted-foreground text-center">الإجراءات</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-card divide-y divide-border">
@@ -78,6 +81,27 @@ export default function Index({ auth, doctors, month }: PageProps<{ doctors: any
                                             <td className="px-4 py-2 text-sm text-foreground">{d.payout}</td>
                                             <td className="px-4 py-2 text-sm text-foreground">{d.bonus}</td>
                                             <td className="px-4 py-2 text-sm font-semibold text-foreground">{d.total}</td>
+                                            <td className="px-4 py-2 text-sm text-center">
+                                                <div className="flex items-center justify-center gap-3">
+                                                    <Link href={route('doctors.show', d.id)} title="عرض" className="text-primary hover:text-primary/80">
+                                                        <EyeIcon className="h-5 w-5" />
+                                                    </Link>
+                                                    <Link href={route('doctors.edit', d.id)} title="تعديل" className="text-green-600 hover:text-green-700">
+                                                        <PencilIcon className="h-5 w-5" />
+                                                    </Link>
+                                                    <button
+                                                        title="حذف المكافآت لهذا الشهر"
+                                                        onClick={() => {
+                                                            if (confirm('حذف كل المكافآت لهذا الطبيب خلال هذا الشهر؟')) {
+                                                                router.delete(route('salaries.bonus.delete'), { data: { doctor_id: d.id, month }, preserveScroll: true });
+                                                            }
+                                                        }}
+                                                        className="text-red-600 hover:text-red-700"
+                                                    >
+                                                        <TrashIcon className="h-5 w-5" />
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

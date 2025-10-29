@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\PatientController as PatientCtrl;
 use App\Http\Controllers\MedicalRecordTemplateController;
 use App\Http\Controllers\Doctor\MedicalRecordTemplateController as DoctorMedicalRecordTemplateController;
 use App\Http\Controllers\DashboardController;
@@ -40,6 +41,7 @@ Route::middleware('auth')->group(function () {
     // Medical Record Templates for Doctors
     Route::resource('medical-record-templates', MedicalRecordTemplateController::class);
     Route::resource('patients', PatientController::class);
+    Route::get('/patients/{patient}/export-pdf', [PatientController::class, 'exportPdf'])->name('patients.exportPdf');
     // API endpoint to get patient data for appointment booking
     Route::get('/patients/{id}/data', [PatientController::class, 'getPatientData'])->name('patients.data');
     Route::resource('services', ServiceController::class);
@@ -58,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('payments', PaymentController::class);
     Route::get('/salaries', [SalaryController::class, 'index'])->name('salaries.index');
     Route::post('/salaries/bonus', [SalaryController::class, 'store'])->name('salaries.bonus');
+    Route::delete('/salaries/bonus', [SalaryController::class, 'destroyMonthBonuses'])->name('salaries.bonus.delete');
     Route::resource('availabilities', DoctorAvailabilityController::class)->except(['show']);
     Route::resource('doctors', DoctorController::class);
     Route::get('/doctor/agenda', [DoctorController::class, 'agenda'])->name('doctor.agenda');

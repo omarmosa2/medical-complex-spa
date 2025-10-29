@@ -1,11 +1,11 @@
 import { PageProps, PaginatedResponse, User } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
 import Button from '@/Components/Button';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
-import { PlusIcon, UserGroupIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, UserGroupIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export default function Index({ auth, users, search, stats }: PageProps<{ users: PaginatedResponse<User>; search?: string; stats: { total_users: number; admins: number; doctors: number; receptionists: number } }>) {
     const { data, setData, get, processing } = useForm({
@@ -74,7 +74,7 @@ export default function Index({ auth, users, search, stats }: PageProps<{ users:
                                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">البريد الإلكتروني</th>
                                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">الدور</th>
                                 <th scope="col" className="relative px-6 py-3 text-center">
-                                    <span className="sr-only">تعديل</span>
+                                    <span className="sr-only">الإجراءات</span>
                                 </th>
                             </tr>
                         </thead>
@@ -86,9 +86,25 @@ export default function Index({ auth, users, search, stats }: PageProps<{ users:
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground text-center">{user.email}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground text-center">{getRoleTranslation(user.role)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                            <Link href={route('users.edit', user.id)} className="text-primary hover:text-primary/80 font-semibold">
-                                                تعديل
-                                            </Link>
+                                            <div className="flex items-center justify-center gap-3">
+                                                <Link href={route('users.show', user.id)} title="عرض" className="text-primary hover:text-primary/80">
+                                                    <EyeIcon className="h-5 w-5" />
+                                                </Link>
+                                                <Link href={route('users.edit', user.id)} title="تعديل" className="text-green-600 hover:text-green-700">
+                                                    <PencilIcon className="h-5 w-5" />
+                                                </Link>
+                                                <button
+                                                    title="حذف"
+                                                    onClick={() => {
+                                                        if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                                                            router.delete(route('users.destroy', user.id), { preserveScroll: true });
+                                                        }
+                                                    }}
+                                                    className="text-red-600 hover:text-red-700"
+                                                >
+                                                    <TrashIcon className="h-5 w-5" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -112,6 +128,35 @@ export default function Index({ auth, users, search, stats }: PageProps<{ users:
                         </tbody>
                     </table>
                 </Card>
+
+                {/* Pagination */}
+                {users.data.length > 0 && (
+                    <div className="mt-6 flex items-center justify-between border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md">
+                        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between w-full">
+                            <div>
+                                <p className="text-sm text-muted-foreground">
+                                    عرض{' '}
+                                    <span className="font-medium text-foreground">{((users.current_page - 1) * users.per_page) + 1}</span>{' '}
+                                    إلى{' '}
+                                    <span className="font-medium text-foreground">{Math.min(users.current_page * users.per_page, users.total)}</span>{' '}
+                                    من أصل{' '}
+                                    <span className="font-medium text-foreground">{users.total}</span>{' '}نتيجة
+                                </p>
+                            </div>
+                            <div>
+                                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                    {users.links && users.links.map((link: any, index: number) => (
+                                        link.url ? (
+                                            <Link key={index} href={link.url} className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${index === 0 ? 'rounded-l-md' : index === users.links.length - 1 ? 'rounded-r-md' : ''} ${link.active ? 'z-10 bg-primary/10 border-primary text-primary' : 'bg-card border-border text-muted-foreground hover:bg-muted'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+                                        ) : (
+                                            <span key={index} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-muted-foreground bg-card border border-border" dangerouslySetInnerHTML={{ __html: link.label }} />
+                                        )
+                                    ))}
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );
