@@ -33,6 +33,16 @@ export default function PaymentCreateModal({ show, onClose, patients, appointmen
         return appointments.filter(a => String(a.patient_id) === String(data.patient_id));
     }, [appointments, data.patient_id]);
 
+    useEffect(() => {
+        if (!data.appointment_id) return;
+        const appt: any = appointments.find(a => String(a.id) === String(data.appointment_id));
+        if (!appt) return;
+        const derivedAmount = appt.amount_paid ?? appt.service?.price ?? '';
+        if (derivedAmount !== '') {
+            setData('amount', String(derivedAmount));
+        }
+    }, [data.appointment_id, appointments]);
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('payments.store'), {

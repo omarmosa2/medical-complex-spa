@@ -57,15 +57,12 @@ export default function Create({
     const [selectedPatientData, setSelectedPatientData] = useState<PatientData | null>(null);
     const [loadingPatient, setLoadingPatient] = useState(false);
 
-    // حساب المبلغ النهائي تلقائياً
+    // حساب المبلغ النهائي تلقائياً (الخصم رقم ثابت وليس نسبة)
     useEffect(() => {
-        if (data.appointment_cost && data.discount !== '') {
-            const cost = parseFloat(data.appointment_cost) || 0;
-            const discountPercent = parseFloat(data.discount) || 0;
-            const discountAmount = (cost * discountPercent) / 100;
-            const finalAmount = cost - discountAmount;
-            setData('final_amount', finalAmount.toFixed(2));
-        }
+        const cost = parseFloat(data.appointment_cost as any) || 0;
+        const discountValue = parseFloat(data.discount as any) || 0;
+        const finalAmount = Math.max(cost - discountValue, 0);
+        if (!isNaN(finalAmount)) setData('final_amount', finalAmount.toFixed(2));
     }, [data.appointment_cost, data.discount]);
 
     // جلب بيانات المريض عند الاختيار
@@ -309,7 +306,7 @@ export default function Create({
                                 </div>
 
                                 <div>
-                                    <InputLabel htmlFor="discount" value="الخصم (%)" />
+                                    <InputLabel htmlFor="discount" value="الخصم" />
                                     <TextInput
                                         id="discount"
                                         type="number"

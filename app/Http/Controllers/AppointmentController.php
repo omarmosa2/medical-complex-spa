@@ -177,12 +177,12 @@ class AppointmentController extends Controller
             $appointment = Appointment::create($validatedData);
             Log::info('Appointment created successfully with ID:', ['id' => $appointment->id]);
 
-            // Create basic payment record (link to patient as well)
+            // Create basic payment record (link to patient as well) as pending
             $appointment->payment()->create([
                 'patient_id' => $validatedData['patient_id'] ?? $appointment->patient_id,
                 'amount' => $validatedData['amount_paid'] ?? 0,
                 'payment_method' => 'cash',
-                'status' => 'paid',
+                'status' => 'pending',
             ]);
 
             Log::info('Payment record created successfully');

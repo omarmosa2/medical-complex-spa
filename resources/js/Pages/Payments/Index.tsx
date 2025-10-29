@@ -5,7 +5,7 @@ import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
 import Button from '@/Components/Button';
-import { PlusIcon, CreditCardIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, CreditCardIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export default function Index({ auth, payments, stats, patients, appointments }: PageProps<{ payments: PaginatedResponse<any>, stats: { totalAmount: number; paidAmount: number; pendingAmount: number; countToday: number }, patients: any[], appointments: any[] }>) {
     const [showCreate, setShowCreate] = useState(false);
@@ -122,12 +122,17 @@ export default function Index({ auth, payments, stats, patients, appointments }:
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                            <Link href={route('payments.show', payment.id)} className="text-primary hover:text-primary/80 ml-2 font-semibold">
-                                                عرض
-                                            </Link>
-                                            <Link href={route('payments.edit', payment.id)} className="text-green-600 hover:text-green-700 font-semibold">
-                                                تعديل
-                                            </Link>
+                                            <div className="flex items-center justify-center gap-3">
+                                                <Link href={route('payments.show', payment.id)} title="عرض" className="text-primary hover:text-primary/80">
+                                                    <EyeIcon className="h-5 w-5" />
+                                                </Link>
+                                                <Link href={route('payments.edit', payment.id)} title="تعديل" className="text-green-600 hover:text-green-700">
+                                                    <PencilIcon className="h-5 w-5" />
+                                                </Link>
+                                                <Link href={route('payments.destroy', payment.id)} method="delete" as="button" preserveScroll title="حذف" className="text-red-600 hover:text-red-700">
+                                                    <TrashIcon className="h-5 w-5" />
+                                                </Link>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

@@ -26,7 +26,7 @@ class PaymentController extends Controller
         $paymentsQuery = Payment::with('appointment.patient', 'appointment.service');
 
         $stats = [
-            'totalAmount' => (float) Payment::sum('amount'),
+            'totalAmount' => (float) Payment::where('status', 'paid')->sum('amount'), // exclude pending
             'paidAmount' => (float) Payment::where('status', 'paid')->sum('amount'),
             'pendingAmount' => (float) Payment::where('status', 'pending')->sum('amount'),
             'countToday' => (int) Payment::whereDate('created_at', now()->toDateString())->count(),
@@ -36,8 +36,8 @@ class PaymentController extends Controller
             'payments' => $paymentsQuery->paginate(10),
             'stats' => $stats,
             'patients' => \App\Models\Patient::select('id','full_name')->get(),
-            'appointments' => \App\Models\Appointment::with('patient')
-                ->select('id','patient_id','appointment_date','appointment_time')
+            'appointments' => \App\Models\Appointment::with(['patient','service'])
+                ->select('id','patient_id','service_id','appointment_date','appointment_time','amount_paid')
                 ->orderBy('appointment_date','desc')
                 ->take(200)
                 ->get(),
@@ -69,7 +69,28 @@ class PaymentController extends Controller
             'status' => 'required|in:paid,pending,refunded',
         ]);
 
-        $payment = Payment::create($validated);
+        // If marking as paid, convert existing pending payment (if any) into paid
+        if ($validated['status'] === 'paid') {
+            $pending = Payment::where('appointment_id', $validated['appointment_id'])
+                ->where('status', 'pending')
+                ->first();
+
+            if ($pending) {
+                $pending->update([
+                    'patient_id' => $validated['patient_id'],
+                    'amount' => $validated['amount'] ?? $pending->amount,
+                    'payment_method' => $validated['payment_method'],
+                    'transaction_id' => $validated['transaction_id'] ?? $pending->transaction_id,
+                    'status' => 'paid',
+                ]);
+                $payment = $pending;
+            } else {
+                $payment = Payment::create($validated);
+            }
+        } else {
+            // Otherwise, just create a record with provided status
+            $payment = Payment::create($validated);
+        }
 
         ActivityLog::create([
             'user_id' => Auth::id(),
