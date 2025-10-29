@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { PageProps, Patient } from '@/types';
 import Card from '@/Components/Card';
 import { FormEventHandler, useState } from 'react';
@@ -104,7 +104,38 @@ export default function Show({ auth, patient }: PageProps<{ patient: Patient }>)
                         <Card>
                             <div className="p-6">
                                 <h3 className="text-lg font-semibold mb-4">المواعيد</h3>
-                                <p className="text-gray-500">محتوى المواعيد هنا</p>
+                                {patient.appointments && patient.appointments.length > 0 ? (
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-border">
+                                            <thead className="bg-muted">
+                                                <tr>
+                                                    <th className="px-4 py-2 text-xs text-muted-foreground">التاريخ</th>
+                                                    <th className="px-4 py-2 text-xs text-muted-foreground">الوقت</th>
+                                                    <th className="px-4 py-2 text-xs text-muted-foreground">الطبيب</th>
+                                                    <th className="px-4 py-2 text-xs text-muted-foreground">الخدمة</th>
+                                                    <th className="px-4 py-2 text-xs text-muted-foreground">الحالة</th>
+                                                    <th className="px-4 py-2 text-xs text-muted-foreground"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-card divide-y divide-border">
+                                                {patient.appointments.map((a: any) => (
+                                                    <tr key={a.id}>
+                                                        <td className="px-4 py-2 text-sm text-foreground">{a.appointment_date}</td>
+                                                        <td className="px-4 py-2 text-sm text-foreground">{a.appointment_time}</td>
+                                                        <td className="px-4 py-2 text-sm text-foreground">{a.doctor?.user?.name || a.doctor?.name || 'غير محدد'}</td>
+                                                        <td className="px-4 py-2 text-sm text-foreground">{a.service?.name || 'غير محدد'}</td>
+                                                        <td className="px-4 py-2 text-sm text-foreground">{a.status || '—'}</td>
+                                                        <td className="px-4 py-2 text-sm text-right">
+                                                            <Link href={route('appointments.show', a.id)} className="text-primary hover:underline">عرض</Link>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p className="text-muted-foreground">لا توجد مواعيد.</p>
+                                )}
                             </div>
                         </Card>
                     )}
@@ -113,15 +144,72 @@ export default function Show({ auth, patient }: PageProps<{ patient: Patient }>)
                         <Card>
                             <div className="p-6">
                                 <h3 className="text-lg font-semibold mb-4">السجلات الطبية</h3>
-                                <p className="text-gray-500">محتوى السجلات الطبية هنا</p>
+                                {patient.medical_records && patient.medical_records.length > 0 ? (
+                                    <ul className="space-y-3">
+                                        {patient.medical_records.map((mr: any) => (
+                                            <li key={mr.id} className="p-4 border border-border rounded-lg">
+                                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                                    <div>
+                                                        <p className="text-sm text-muted-foreground">الطبيب</p>
+                                                        <p className="text-foreground font-medium">{mr.doctor?.user?.name || mr.doctor?.name || 'غير محدد'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-muted-foreground">التاريخ</p>
+                                                        <p className="text-foreground font-medium">{mr.created_at}</p>
+                                                    </div>
+                                                </div>
+                                                {mr.summary && (
+                                                    <div className="mt-3">
+                                                        <p className="text-sm text-muted-foreground">الملخص</p>
+                                                        <p className="text-foreground whitespace-pre-wrap">{mr.summary}</p>
+                                                    </div>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-muted-foreground">لا توجد سجلات طبية.</p>
+                                )}
                             </div>
                         </Card>
                     )}
 
                     {activeTab === 'documents' && (
                         <Card>
-                            <div className="p-6">
-                                <h3 className="text-lg font-semibold mb-4">الوثائق</h3>
+                            <div className="p-6 space-y-6">
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-4">الوثائق</h3>
+                                    {patient.documents && patient.documents.length > 0 ? (
+                                        <ul className="space-y-3">
+                                            {patient.documents.map((doc: any) => (
+                                                <li key={doc.id} className="p-4 border border-border rounded-lg flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-foreground font-medium">{doc.title}</p>
+                                                        <p className="text-sm text-muted-foreground">رفع بواسطة: {doc.uploaded_by_user?.name || 'غير معروف'} • {doc.created_at}</p>
+                                                    </div>
+                                                    {doc.file_path && (
+                                                        <div className="flex items-center gap-4">
+                                                            <a href={`/storage/${doc.file_path}`} target="_blank" className="text-primary hover:underline" rel="noreferrer">تنزيل</a>
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (confirm('هل أنت متأكد من حذف هذه الوثيقة؟')) {
+                                                                        router.delete(route('documents.destroy', doc.id));
+                                                                    }
+                                                                }}
+                                                                className="text-red-600 hover:underline"
+                                                            >
+                                                                حذف
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-muted-foreground">لا توجد وثائق.</p>
+                                    )}
+                                </div>
+
                                 <form onSubmit={submit}>
                                     <div className="mb-4">
                                         <InputLabel htmlFor="title" value="عنوان الوثيقة" />

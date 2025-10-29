@@ -22,6 +22,7 @@ class StoreServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'clinic_id' => 'required|exists:clinics,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',

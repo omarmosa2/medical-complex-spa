@@ -34,9 +34,17 @@ class UserController extends Controller
             });
         }
 
+        $stats = [
+            'total_users' => User::count(),
+            'admins' => User::where('role', 'admin')->count(),
+            'doctors' => User::where('role', 'doctor')->count(),
+            'receptionists' => User::where('role', 'receptionist')->count(),
+        ];
+
         return Inertia::render('Users/Index', [
             'users' => $query->with('doctor')->paginate(10),
             'search' => $request->search,
+            'stats' => $stats,
         ]);
     }
 

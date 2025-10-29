@@ -75,13 +75,23 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
         ],
     };
 
-    // Line chart for patient growth
+    // Line chart for patient growth (with demo fallback)
+    const patientGrowth = (charts.patientGrowth && charts.patientGrowth.length > 0)
+        ? charts.patientGrowth
+        : [
+            { date: '2025-10-01', count: 2 },
+            { date: '2025-10-05', count: 4 },
+            { date: '2025-10-10', count: 3 },
+            { date: '2025-10-15', count: 6 },
+            { date: '2025-10-20', count: 5 },
+            { date: '2025-10-25', count: 8 },
+        ];
     const patientGrowthData = {
-        labels: charts.patientGrowth.map((item: any) => item.date),
+        labels: patientGrowth.map((item: any) => item.date),
         datasets: [
             {
                 label: 'تسجيل المرضى',
-                data: charts.patientGrowth.map((item: any) => item.count),
+                data: patientGrowth.map((item: any) => item.count),
                 borderColor: '#3498DB', // primary-500
                 backgroundColor: 'rgba(52, 152, 219, 0.2)', // primary-500 with opacity
                 tension: 0.4,
@@ -89,13 +99,23 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
         ],
     };
 
-    // Line chart for appointment trends
+    // Line chart for appointment trends (with demo fallback)
+    const appointmentTrends = (charts.appointmentTrends && charts.appointmentTrends.length > 0)
+        ? charts.appointmentTrends
+        : [
+            { date: '2025-10-01', count: 1 },
+            { date: '2025-10-05', count: 2 },
+            { date: '2025-10-10', count: 1 },
+            { date: '2025-10-15', count: 3 },
+            { date: '2025-10-20', count: 2 },
+            { date: '2025-10-25', count: 4 },
+        ];
     const appointmentTrendsData = {
-        labels: charts.appointmentTrends.map((item: any) => item.date),
+        labels: appointmentTrends.map((item: any) => item.date),
         datasets: [
             {
                 label: 'حجوزات يومية',
-                data: charts.appointmentTrends.map((item: any) => item.count),
+                data: appointmentTrends.map((item: any) => item.count),
                 borderColor: '#5DADE2', // primary-400
                 backgroundColor: 'rgba(93, 173, 226, 0.2)', // primary-400 with opacity
                 tension: 0.4,
@@ -103,12 +123,49 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
         ],
     };
 
-    // Pie chart for service distribution
-    const serviceDistributionData = {
-        labels: charts.serviceDistribution.map((item: any) => item.service),
+    // Revenue per month (12 months) with demo fallback
+    const monthlyRevenue = (charts.monthlyRevenue && charts.monthlyRevenue.length > 0)
+        ? charts.monthlyRevenue
+        : [
+            { month: '2025-01', total: 1200 },
+            { month: '2025-02', total: 900 },
+            { month: '2025-03', total: 1500 },
+            { month: '2025-04', total: 1100 },
+            { month: '2025-05', total: 1700 },
+            { month: '2025-06', total: 1400 },
+            { month: '2025-07', total: 1600 },
+            { month: '2025-08', total: 1800 },
+            { month: '2025-09', total: 1300 },
+            { month: '2025-10', total: 1900 },
+            { month: '2025-11', total: 1750 },
+            { month: '2025-12', total: 2000 },
+        ];
+    const revenueBarData = {
+        labels: monthlyRevenue.map((r: any) => r.month),
         datasets: [
             {
-                data: charts.serviceDistribution.map((item: any) => item.count),
+                label: 'الإيراد الشهري',
+                data: monthlyRevenue.map((r: any) => r.total),
+                backgroundColor: '#10B981',
+                borderColor: '#059669',
+                borderWidth: 2,
+            },
+        ],
+    };
+
+    // Pie chart for service distribution (with demo fallback)
+    const serviceDistribution = (charts.serviceDistribution && charts.serviceDistribution.length > 0)
+        ? charts.serviceDistribution
+        : [
+            { service: 'استشارة', count: 10 },
+            { service: 'تنظيف أسنان', count: 6 },
+            { service: 'تحاليل', count: 8 },
+        ];
+    const serviceDistributionData = {
+        labels: serviceDistribution.map((item: any) => item.service),
+        datasets: [
+            {
+                data: serviceDistribution.map((item: any) => item.count),
                 backgroundColor: [
                     '#3498DB', // primary-500
                     '#5DADE2', // primary-400
@@ -218,6 +275,89 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
                 </div>
             </div>
 
+            {/* Quick Actions */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            >
+                <Link
+                    href={route('patients.create')}
+                    className="group relative overflow-hidden rounded-xl border border-border bg-card hover:bg-muted/60 dark:hover:bg-muted/10 shadow-md hover:shadow-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 p-4"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <div className="mr-3 grid place-items-center h-10 w-10 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                                <UserIcon className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">إجراء سريع</p>
+                                <p className="font-semibold text-foreground">مريض جديد</p>
+                            </div>
+                        </div>
+                        <span className="opacity-0 group-hover:opacity-100 text-primary transition-opacity">→</span>
+                    </div>
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 group-hover:from-primary/5 group-hover:via-primary/0 group-hover:to-primary/10 transition-colors"></span>
+                </Link>
+
+                <Link
+                    href={route('appointments.create')}
+                    className="group relative overflow-hidden rounded-xl border border-border bg-card hover:bg-muted/60 dark:hover:bg-muted/10 shadow-md hover:shadow-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 p-4"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <div className="mr-3 grid place-items-center h-10 w-10 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                                <CalendarDaysIcon className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">إجراء سريع</p>
+                                <p className="font-semibold text-foreground">موعد جديد</p>
+                            </div>
+                        </div>
+                        <span className="opacity-0 group-hover:opacity-100 text-primary transition-opacity">→</span>
+                    </div>
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 group-hover:from-primary/5 group-hover:via-primary/0 group-hover:to-primary/10 transition-colors"></span>
+                </Link>
+
+                <Link
+                    href={route('reports.index')}
+                    className="group relative overflow-hidden rounded-xl border border-border bg-card hover:bg-muted/60 dark:hover:bg-muted/10 shadow-md hover:shadow-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 p-4"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <div className="mr-3 grid place-items-center h-10 w-10 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                                <ChartBarIcon className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">إجراء سريع</p>
+                                <p className="font-semibold text-foreground">التقارير</p>
+                            </div>
+                        </div>
+                        <span className="opacity-0 group-hover:opacity-100 text-primary transition-opacity">→</span>
+                    </div>
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 group-hover:from-primary/5 group-hover:via-primary/0 group-hover:to-primary/10 transition-colors"></span>
+                </Link>
+
+                <Link
+                    href={route('settings.index')}
+                    className="group relative overflow-hidden rounded-xl border border-border bg-card hover:bg-muted/60 dark:hover:bg-muted/10 shadow-md hover:shadow-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 p-4"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <div className="mr-3 grid place-items-center h-10 w-10 rounded-lg bg-muted text-foreground/70 group-hover:bg-muted/80 transition-colors">
+                                <ClockIcon className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">إجراء سريع</p>
+                                <p className="font-semibold text-foreground">الإعدادات</p>
+                            </div>
+                        </div>
+                        <span className="opacity-0 group-hover:opacity-100 text-primary transition-opacity">→</span>
+                    </div>
+                </Link>
+            </motion.div>
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                 {[
@@ -243,10 +383,10 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
                     <div className="p-6">
                         <h3 className="text-xl font-semibold text-foreground mb-6 border-b border-border pb-3 flex items-center">
                             <ChartBarIcon className="w-5 h-5 mr-2" />
-                            إحصائيات عامة
+                            الإيراد الشهري (12 شهر)
                         </h3>
-                        <div className="w-full" aria-label="مخطط إحصائيات عامة">
-                            <Bar data={barChartData} options={barChartOptions} />
+                        <div className="w-full" aria-label="monthly-revenue">
+                            <Bar data={revenueBarData} options={barChartOptions} />
                         </div>
                     </div>
                 </Card>
@@ -276,7 +416,7 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
                 </Card>
             </motion.div>
 
-            {/* Additional Charts */}
+            {/* Secondary Charts */}
             <motion.div
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -291,78 +431,6 @@ const AdminDashboard = ({ auth, stats, charts, recentNotifications }: { auth: an
                         </h3>
                         <div className="w-full" aria-label="مخطط اتجاه الحجوزات">
                             <Line data={appointmentTrendsData} options={lineChartOptions} />
-                        </div>
-                    </div>
-                </Card>
-
-                {/* Notifications */}
-                <Card className="border border-border shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden">
-                    <div className="p-6">
-                        <h3 className="text-xl font-semibold text-foreground mb-6 border-b border-border pb-3 flex items-center">
-                            <BellIcon className="w-5 h-5 mr-2" />
-                            الإشعارات الأخيرة
-                        </h3>
-                        <div className="space-y-3">
-                            {recentNotifications.length > 0 ? recentNotifications.map(notification => (
-                                <div key={notification.id} className="p-3 bg-muted rounded-lg">
-                                    <div className="flex items-start">
-                                        <ExclamationTriangleIcon className={`w-5 h-5 mr-3 mt-0.5 ${notification.type === 'error' ? 'text-destructive' : notification.type === 'warning' ? 'text-yellow-500' : 'text-primary'}`} />
-                                        <div>
-                                            <p className="text-sm font-medium text-foreground">{notification.title}</p>
-                                            <p className="text-xs text-muted-foreground">{notification.message}</p>
-                                            <p className="text-xs text-muted-foreground mt-1">{new Date(notification.created_at).toLocaleDateString('ar')}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )) : <p className="text-muted-foreground">لا توجد إشعارات جديدة</p>}
-                        </div>
-                    </div>
-                </Card>
-
-                {/* Quick Actions */}
-                <Card className="border border-border shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden">
-                    <div className="p-6">
-                        <h3 className="text-xl font-semibold text-foreground mb-6 border-b border-border pb-3 flex items-center">
-                            <ArrowTrendingUpIcon className="w-5 h-5 mr-2" />
-                            إجراءات سريعة
-                        </h3>
-                        <div className="space-y-4">
-                            <Link
-                                href={route('patients.index')}
-                                className="block p-3 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
-                            >
-                                <div className="flex items-center">
-                                    <UserIcon className="w-5 h-5 text-primary mr-3" />
-                                    <span className="text-primary font-medium">إدارة المرضى</span>
-                                </div>
-                            </Link>
-                            <Link
-                                href={route('appointments.index')}
-                                className="block p-3 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
-                            >
-                                <div className="flex items-center">
-                                    <CalendarDaysIcon className="w-5 h-5 text-primary/80 mr-3" />
-                                    <span className="text-primary/80 font-medium">إدارة الحجوزات</span>
-                                </div>
-                            </Link>
-                            <Link
-                                href={route('reports.index')}
-                                className="block p-3 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
-                            >
-                                <div className="flex items-center">
-                                    <ChartBarIcon className="w-5 h-5 text-primary/60 mr-3" />
-                                    <span className="text-primary/60 font-medium">عرض التقارير</span>
-                                </div>
-                            </Link>
-                            <Link
-                                href={route('settings.index')}
-                                className="block p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                            >
-                                <div className="flex items-center">
-                                    <ClockIcon className="w-5 h-5 text-muted-foreground mr-3" />
-                                    <span className="text-muted-foreground font-medium">الإعدادات</span>
-                                </div>
-                            </Link>
                         </div>
                     </div>
                 </Card>

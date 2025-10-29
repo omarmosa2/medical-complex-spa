@@ -51,6 +51,11 @@ class DashboardController extends Controller
                             'count' => $item->count,
                         ];
                     }),
+                'monthlyRevenue' => Payment::select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), DB::raw('SUM(amount) as total'))
+                    ->where('created_at', '>=', Carbon::now()->subMonths(12))
+                    ->groupBy('month')
+                    ->orderBy('month', 'asc')
+                    ->get(),
             ];
             $data['recentNotifications'] = NotificationModel::latest()->take(5)->get();
             $data['todaysAppointments'] = Appointment::with(['patient', 'doctor.user', 'service'])

@@ -22,7 +22,15 @@ class SettingsController extends Controller
         $validatedData = $request->validate([
             'app_name' => 'nullable|string|max:255',
             'default_currency' => 'nullable|string|max:3',
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
         ]);
+ 
+        if ($request->hasFile('logo')) {
+            $image = $request->file('logo');
+            $imageName = time().'.'.$image->extension();
+            $image->move(public_path('images'), $imageName);
+            $validatedData['logo'] = $imageName;
+        }
 
         foreach ($validatedData as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);

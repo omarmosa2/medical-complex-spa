@@ -8,8 +8,9 @@ import InputError from '@/Components/InputError';
 import Button from '@/Components/Button';
 import { FormEventHandler } from 'react';
 
-export default function Create({ auth }: PageProps) {
+export default function Create({ auth, clinics }: PageProps<{ clinics: any[] }>) {
     const { data, setData, post, processing, errors } = useForm({
+        clinic_id: '',
         name: '',
         description: '',
         price: '',
@@ -24,9 +25,9 @@ export default function Create({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Add New Service</h2>}
+            header={<h2 className="font-semibold text-xl text-foreground leading-tight">إضافة خدمة</h2>}
         >
-            <Head title="Add Service" />
+            <Head title="إضافة خدمة" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -34,7 +35,17 @@ export default function Create({ auth }: PageProps) {
                         <form onSubmit={submit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <InputLabel htmlFor="name" value="Name" />
+                                    <InputLabel htmlFor="clinic_id" value="العيادة" />
+                                    <select id="clinic_id" name="clinic_id" value={data.clinic_id} className="mt-1 block w-full border-input bg-background text-foreground focus:border-primary focus:ring-primary rounded-md shadow-sm" onChange={(e) => setData('clinic_id', e.target.value)} required>
+                                        <option value="">اختر العيادة</option>
+                                        {clinics?.map((c: any) => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                    <InputError message={errors.clinic_id} className="mt-2" />
+                                </div>
+                                <div>
+                                    <InputLabel htmlFor="name" value="اسم الخدمة" />
                                     <TextInput
                                         id="name"
                                         name="name"
@@ -47,7 +58,7 @@ export default function Create({ auth }: PageProps) {
                                     <InputError message={errors.name} className="mt-2" />
                                 </div>
                                 <div>
-                                    <InputLabel htmlFor="price" value="Price" />
+                                    <InputLabel htmlFor="price" value="السعر" />
                                     <TextInput
                                         id="price"
                                         name="price"
@@ -60,7 +71,7 @@ export default function Create({ auth }: PageProps) {
                                     <InputError message={errors.price} className="mt-2" />
                                 </div>
                                 <div>
-                                    <InputLabel htmlFor="duration_minutes" value="Duration (Minutes)" />
+                                    <InputLabel htmlFor="duration_minutes" value="المدة (بالدقائق)" />
                                     <TextInput
                                         id="duration_minutes"
                                         name="duration_minutes"
@@ -73,7 +84,7 @@ export default function Create({ auth }: PageProps) {
                                     <InputError message={errors.duration_minutes} className="mt-2" />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <InputLabel htmlFor="description" value="Description" />
+                                    <InputLabel htmlFor="description" value="الوصف" />
                                     <TextInput
                                         id="description"
                                         name="description"
@@ -87,7 +98,7 @@ export default function Create({ auth }: PageProps) {
 
                             <div className="flex items-center justify-end mt-6">
                                 <Button className="ms-4" disabled={processing}>
-                                    Save Service
+                                    حفظ الخدمة
                                 </Button>
                             </div>
                         </form>

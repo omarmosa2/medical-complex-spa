@@ -21,7 +21,8 @@ class ServiceController extends Controller
     public function index()
     {
         return Inertia::render('Services/Index', [
-            'services' => Service::paginate(10),
+            'services' => Service::with('clinic')->paginate(10),
+            'clinics' => \App\Models\Clinic::select('id','name')->get(),
         ]);
     }
 
@@ -30,7 +31,9 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Services/Create');
+        return Inertia::render('Services/Create', [
+            'clinics' => \App\Models\Clinic::select('id','name')->get(),
+        ]);
     }
 
     /**
@@ -47,7 +50,8 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        // Not typically used in SPA CRUD, but can be implemented if needed
+        $service->load('clinic');
+        return Inertia::render('Services/Show', [ 'service' => $service ]);
     }
 
     /**

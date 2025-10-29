@@ -1,4 +1,4 @@
-import { useState, PropsWithChildren, ReactNode } from 'react';
+import { useState, PropsWithChildren } from 'react';
 // @ts-ignore
 import ApplicationLogo from '@/Components/ApplicationLogo.jsx';
 // @ts-ignore
@@ -37,29 +37,37 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
 
     const SidebarContent = () => (
         <>
-            <div className={`h-20 flex items-center justify-center flex-shrink-0 px-6 ${themeClasses.bgSecondary} border-b border-border shadow-lg`}>
+            <div className={`h-20 flex items-center justify-center flex-shrink-0 px-6 ${themeClasses.bgSecondary} border-b border-border shadow-lg bg-gradient-to-b from-transparent to-muted/50`}>
                 <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105">
-                    <ApplicationLogo className="block h-12 w-auto filter drop-shadow-sm" />
+                    <img src="" className="block h-12 w-auto filter drop-shadow-sm" />
                 </Link>
             </div>
-            <nav className="mt-6 flex-1 px-4 pb-6 space-y-2 overflow-y-auto">
+            <nav className="mt-6 flex-1 px-4 pb-6 space-y-1 overflow-y-auto">
+                <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                 <NavLink href={route('dashboard')}>
                     <HomeIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                     <span className={`font-medium ${themeClasses.textPrimary}`}>لوحة التحكم</span>
                 </NavLink>
+                </div>
+                <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                 <NavLink href={route('patients.index')}>
                     <UsersIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                     <span className={`font-medium ${themeClasses.textPrimary}`}>إدارة المرضى</span>
                 </NavLink>
+                </div>
+                <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                 <NavLink href={route('appointments.index')}>
                     <CalendarIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                     <span className={`font-medium ${themeClasses.textPrimary}`}>إدارة الحجوزات</span>
                 </NavLink>
+                </div>
                 {(auth.user.role === 'admin' || auth.user.role === 'receptionist') && (
+                    <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                     <NavLink href={route('payments.index')}>
                         <CreditCardIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                         <span className={`font-medium ${themeClasses.textPrimary}`}>المدفوعات</span>
                     </NavLink>
+                    </div>
                 )}
                 {auth.user.role === 'admin' && (
                     <>
@@ -69,34 +77,60 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                 الإدارة
                             </h3>
                         </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('users.index')}>
                             <UsersIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>المستخدمين</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('services.index')}>
                             <ClipboardDocumentListIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>الخدمات</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('medical-record-templates.index')}>
                             <DocumentDuplicateIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>ملفات المرضى</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('reports.index')}>
                             <ChartBarIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>التقارير</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+                        <NavLink href={route('payments.index')}>
+                            <CreditCardIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
+                            <span className={`font-medium ${themeClasses.textPrimary}`}>المدفوعات</span>
+                        </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+                        <NavLink href={route('salaries.index')}>
+                            <ChartBarIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
+                            <span className={`font-medium ${themeClasses.textPrimary}`}>الرواتب</span>
+                        </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('clinics.index')}>
                             <BuildingOffice2Icon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>العيادات</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('doctors.index')}>
                             <UserCircleIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>الأطباء</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('settings.index')}>
                             <Cog6ToothIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>الإعدادات</span>
                         </NavLink>
+                        </div>
                     </>
                 )}
                 {auth.user.role === 'doctor' && (
@@ -107,18 +141,24 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                 منطقة الطبيب
                             </h3>
                         </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('doctor.tool')}>
                             <HomeIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>أدوات الطبيب</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('doctor.agenda')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>جدول المواعيد</span>
                         </NavLink>
+                        </div>
+                        <div className="rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
                         <NavLink href={route('availabilities.index')}>
                             <CalendarDaysIcon className="mr-3 flex-shrink-0 h-5 w-5 group-hover:scale-110 transition-transform duration-300 text-foreground" />
                             <span className={`font-medium ${themeClasses.textPrimary}`}>أوقات التوفر</span>
                         </NavLink>
+                        </div>
                      </>
                 )}
             </nav>

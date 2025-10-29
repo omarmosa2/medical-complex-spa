@@ -5,7 +5,7 @@ import Card from '@/Components/Card';
 import Button from '@/Components/Button';
 import SearchAndFilter from '@/Components/SearchAndFilter';
 import { PlusIcon, UsersIcon, UserGroupIcon, CalendarDaysIcon, ClockIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
+ 
 import { motion } from 'framer-motion';
 
 interface StatCardProps {
@@ -35,14 +35,11 @@ const StatCard = ({ title, value, icon: Icon }: StatCardProps) => (
     </motion.div>
 );
 
-export default function Index({ auth, patients, stats, filters, filterOptions }: PageProps<{ patients: any, stats: any, filters: any, filterOptions: any }>) {
+export default function Index({ patients, stats, filters, filterOptions }: PageProps<{ patients: any, stats: any, filters: any, filterOptions: any }>) {
     const filterConfig = [
-        { key: 'full_name', label: 'الاسم الثلاثي', options: filterOptions.full_names || [] },
         { key: 'gender', label: 'الجنس', options: filterOptions.genders || [] },
         { key: 'age', label: 'العمر', options: filterOptions.ages || [] },
         { key: 'residence', label: 'مكان الإقامة', options: filterOptions.residences || [] },
-        { key: 'phone', label: 'الهاتف', options: filterOptions.phones || [] },
-        { key: 'email', label: 'الإيميل', options: filterOptions.emails || [] },
     ];
 
     return (
@@ -70,7 +67,7 @@ export default function Index({ auth, patients, stats, filters, filterOptions }:
                 {/* Search and Filters */}
                 <div className="mb-6">
                     <SearchAndFilter
-                        searchPlaceholder="ابحث في الاسم، الهاتف، الإيميل، أو مكان الإقامة"
+                        searchPlaceholder="ابحث أو صفّي النتائج"
                         filters={filterConfig}
                         currentFilters={filters}
                         routeName="patients.index"

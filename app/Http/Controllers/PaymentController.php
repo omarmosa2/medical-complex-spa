@@ -22,8 +22,25 @@ class PaymentController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Payment::class);
+        $paymentsQuery = Payment::with('appointment.patient', 'appointment.service');
+
+        $stats = [
+            'totalAmount' => (float) Payment::sum('amount'),
+            'paidAmount' => (float) Payment::where('status', 'paid')->sum('amount'),
+            'pendingAmount' => (float) Payment::where('status', 'pending')->sum('amount'),
+            'countToday' => (int) Payment::whereDate('created_at', now()->toDateString())->count(),
+        ];
+
         return Inertia::render('Payments/Index', [
-            'payments' => Payment::with('appointment.patient', 'appointment.service')->paginate(10),
+            'payments' => $paymentsQuery->paginate(10),
+            'stats' => $stats,
+            'patients' => \App\Models\Patient::select('id','full_name')->get(),
+            'appointments' => \App\Models\Appointment::with('patient')
+                ->select('id','patient_id','appointment_date','appointment_time')
+                ->orderBy('appointment_date','desc')
+                ->take(200)
+                ->get(),
         ]);
     }
 

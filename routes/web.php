@@ -20,17 +20,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorAvailabilityController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SalaryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('dashboard');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -53,10 +49,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
     Route::resource('reports', ReportController::class);
+    // Patient Documents
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings', [SettingsController::class, 'store'])->name('settings.store');
     Route::resource('clinics', ClinicController::class);
     Route::resource('payments', PaymentController::class);
+    Route::get('/salaries', [SalaryController::class, 'index'])->name('salaries.index');
+    Route::post('/salaries/bonus', [SalaryController::class, 'store'])->name('salaries.bonus');
     Route::resource('availabilities', DoctorAvailabilityController::class)->except(['show']);
     Route::resource('doctors', DoctorController::class);
     Route::get('/doctor/agenda', [DoctorController::class, 'agenda'])->name('doctor.agenda');

@@ -7,7 +7,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import { PlusIcon, UserGroupIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
-export default function Index({ auth, users, search }: PageProps<{ users: PaginatedResponse<User>; search?: string }>) {
+export default function Index({ auth, users, search, stats }: PageProps<{ users: PaginatedResponse<User>; search?: string; stats: { total_users: number; admins: number; doctors: number; receptionists: number } }>) {
     const { data, setData, get, processing } = useForm({
         search: search || '',
     });
@@ -43,7 +43,14 @@ export default function Index({ auth, users, search }: PageProps<{ users: Pagina
         >
             <Head title="المستخدمين" />
 
-            <div className="p-6" dir="rtl">
+            <div className="p-6 space-y-6" dir="rtl">
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">إجمالي المستخدمين</p><p className="text-2xl font-bold text-foreground mt-1">{stats?.total_users ?? 0}</p></div></Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">المدراء</p><p className="text-2xl font-bold text-foreground mt-1">{stats?.admins ?? 0}</p></div></Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">الأطباء</p><p className="text-2xl font-bold text-foreground mt-1">{stats?.doctors ?? 0}</p></div></Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">موظفو الاستقبال</p><p className="text-2xl font-bold text-foreground mt-1">{stats?.receptionists ?? 0}</p></div></Card>
+                </div>
                 <Card className="border border-border shadow-lg rounded-xl overflow-hidden">
                     <div className="p-6 border-b border-border">
                         <form onSubmit={submit} className="flex items-center space-x-4">

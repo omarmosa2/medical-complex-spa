@@ -35,9 +35,10 @@ interface AppointmentsIndexProps {
         doctors: any[];
         services: any[];
     };
+    stats?: { total: number; today: number; scheduled: number; completed: number };
 }
 
-export default function Index({ auth, appointments, clinics, patients, doctors, services, filters, filterOptions }: PageProps<AppointmentsIndexProps>) {
+export default function Index({ auth, appointments, clinics, patients, doctors, services, filters, filterOptions, stats }: PageProps<AppointmentsIndexProps>) {
     const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
@@ -264,6 +265,16 @@ export default function Index({ auth, appointments, clinics, patients, doctors, 
             }
         >
             <Head title="المواعيد" />
+
+            {/* Stats Cards */}
+            <div className="p-6 pt-0" dir="rtl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">إجمالي المواعيد</p><p className="text-2xl font-bold text-foreground mt-1">{stats?.total ?? appointments.total}</p></div></Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">مواعيد اليوم</p><p className="text-2xl font-bold text-foreground mt-1">{stats?.today ?? 0}</p></div></Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">مجدولة</p><p className="text-2xl font-bold text-yellow-600 mt-1">{stats?.scheduled ?? 0}</p></div></Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden"><div className="p-4 text-center"><p className="text-sm text-muted-foreground">مكتملة</p><p className="text-2xl font-bold text-green-600 mt-1">{stats?.completed ?? 0}</p></div></Card>
+                </div>
+            </div>
 
             <div className="p-6">
                 <Card>

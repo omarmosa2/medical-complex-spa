@@ -1,11 +1,14 @@
 import { PageProps, PaginatedResponse } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import PaymentCreateModal from '@/Components/PaymentCreateModal';
+import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Card from '@/Components/Card';
 import Button from '@/Components/Button';
 import { PlusIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 
-export default function Index({ auth, payments }: PageProps<{ payments: PaginatedResponse<any> }>) {
+export default function Index({ auth, payments, stats, patients, appointments }: PageProps<{ payments: PaginatedResponse<any>, stats: { totalAmount: number; paidAmount: number; pendingAmount: number; countToday: number }, patients: any[], appointments: any[] }>) {
+    const [showCreate, setShowCreate] = useState(false);
     // ترجمة طرق الدفع وحالات الدفع
     const getPaymentMethodTranslation = (method: string) => {
         const methods: { [key: string]: string } = {
@@ -32,18 +35,43 @@ export default function Index({ auth, payments }: PageProps<{ payments: Paginate
             header={
                 <div className="flex justify-between items-center" dir="rtl">
                     <h2 className="font-semibold text-xl text-foreground leading-tight">المدفوعات</h2>
-                    <Link href={route('payments.create')}>
-                        <Button>
-                            <PlusIcon className="h-5 w-5 ml-2" />
-                            إضافة دفعة
-                        </Button>
-                    </Link>
+                    <Button onClick={() => setShowCreate(true)}>
+                        <PlusIcon className="h-5 w-5 ml-2" />
+                        إضافة دفعة
+                    </Button>
                 </div>
             }
         >
             <Head title="المدفوعات" />
 
-            <div className="p-6" dir="rtl">
+            <div className="p-6 space-y-6" dir="rtl">
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden">
+                        <div className="p-4 text-center">
+                            <p className="text-sm text-muted-foreground">إجمالي المدفوعات</p>
+                            <p className="text-2xl font-bold text-foreground mt-1">${(stats?.totalAmount ?? 0).toFixed(2)}</p>
+                        </div>
+                    </Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden">
+                        <div className="p-4 text-center">
+                            <p className="text-sm text-muted-foreground">مدفوع</p>
+                            <p className="text-2xl font-bold text-green-600 mt-1">${(stats?.paidAmount ?? 0).toFixed(2)}</p>
+                        </div>
+                    </Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden">
+                        <div className="p-4 text-center">
+                            <p className="text-sm text-muted-foreground">معلّق</p>
+                            <p className="text-2xl font-bold text-yellow-600 mt-1">${(stats?.pendingAmount ?? 0).toFixed(2)}</p>
+                        </div>
+                    </Card>
+                    <Card className="border border-border shadow-md rounded-xl overflow-hidden">
+                        <div className="p-4 text-center">
+                            <p className="text-sm text-muted-foreground">مدفوعات اليوم</p>
+                            <p className="text-2xl font-bold text-foreground mt-1">{stats?.countToday ?? 0}</p>
+                        </div>
+                    </Card>
+                </div>
                 <Card className="border border-border shadow-lg rounded-xl overflow-hidden">
                     <table className="min-w-full divide-y divide-border">
                         <thead className="bg-muted">
@@ -123,6 +151,8 @@ export default function Index({ auth, payments }: PageProps<{ payments: Paginate
                         </tbody>
                     </table>
                 </Card>
+
+                <PaymentCreateModal show={showCreate} onClose={() => setShowCreate(false)} patients={patients || []} appointments={appointments || []} />
             </div>
         </AuthenticatedLayout>
     );

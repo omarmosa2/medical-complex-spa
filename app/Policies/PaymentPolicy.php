@@ -13,7 +13,7 @@ class PaymentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
@@ -21,7 +21,7 @@ class PaymentPolicy
      */
     public function view(User $user, Payment $payment): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
@@ -29,7 +29,7 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**
@@ -37,7 +37,7 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return in_array($user->role, ['admin', 'receptionist']);
+        return $user->role === 'admin';
     }
 
     /**

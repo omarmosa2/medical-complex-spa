@@ -17,7 +17,7 @@ export default function Welcome({ canLogin, canRegister, laravelVersion, phpVers
                             مرحباً بكم في نظام إدارة المجمع الطبي
                         </h1>
                         <p className="mt-3 text-xl text-gray-600 dark:text-gray-400">
-                            حل شامل لإدارة الممارسة الطبية
+                            حل شامل لإدارة المجمعات الطبية
                         </p>
                         <div className="mt-8 space-x-reverse space-x-4">
                             {canLogin && (
@@ -28,18 +28,6 @@ export default function Welcome({ canLogin, canRegister, laravelVersion, phpVers
                                     تسجيل الدخول
                                 </Link>
                             )}
-
-                            {canRegister && (
-                                <Link
-                                    href="/register"
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50"
-                                >
-                                    إنشاء حساب
-                                </Link>
-                            )}
-                        </div>
-                        <div className="mt-8 text-sm text-gray-500 dark:text-gray-400">
-                            يعمل بـ Laravel v{laravelVersion} (PHP v{phpVersion})
                         </div>
                     </div>
                 </div>

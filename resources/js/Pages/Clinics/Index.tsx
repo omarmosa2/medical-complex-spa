@@ -21,18 +21,21 @@ export default function Index({ auth, clinics, stats }: PageProps<{ clinics: any
             header={
                 <div className="flex justify-between items-center" dir="rtl">
                     <h2 className="font-semibold text-xl text-foreground leading-tight">العيادات</h2>
-                    <Link href={route('clinics.create')}>
-                        <Button>
-                            <PlusIcon className="h-5 w-5 ml-2" />
-                            إضافة عيادة
-                        </Button>
-                    </Link>
                 </div>
             }
         >
             <Head title="العيادات" />
 
             <div className="p-6" dir="rtl">
+                {/* زر إضافة عيادة أعلى الكاردات يسار */}
+                <div className="mb-4 flex">
+                    <Link href={route('clinics.create')} className="ml-auto">
+                        <Button>
+                            <PlusIcon className="h-5 w-5 ml-2" />
+                            إضافة عيادة
+                        </Button>
+                    </Link>
+                </div>
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <Card className="bg-gradient-to-br from-primary-50 via-primary-100/20 to-transparent dark:from-primary-900/20 dark:to-transparent border border-primary-200 dark:border-primary-700 shadow-xl hover:shadow-primary-500/20 transition-all duration-300 p-6 rounded-xl">

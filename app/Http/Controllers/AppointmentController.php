@@ -77,6 +77,14 @@ class AppointmentController extends Controller
         // Paginate results
         $appointments = $query->paginate(15);
 
+        // Stats
+        $stats = [
+            'total' => Appointment::count(),
+            'today' => Appointment::whereDate('appointment_date', now()->toDateString())->count(),
+            'scheduled' => Appointment::where('status', 'scheduled')->count(),
+            'completed' => Appointment::where('status', 'completed')->count(),
+        ];
+
         // Get filter options
         $filterOptions = [
             'statuses' => ['scheduled', 'completed', 'cancelled', 'no_show'],
@@ -93,6 +101,7 @@ class AppointmentController extends Controller
             'clinics' => \App\Models\Clinic::all(),
             'filters' => $request->only(['search', 'status', 'clinic_id', 'doctor_id', 'service_id', 'date_from', 'date_to']),
             'filterOptions' => $filterOptions,
+            'stats' => $stats,
         ]);
     }
 
@@ -168,12 +177,12 @@ class AppointmentController extends Controller
             $appointment = Appointment::create($validatedData);
             Log::info('Appointment created successfully with ID:', ['id' => $appointment->id]);
 
-            // Create basic payment record
+            // Create basic payment record (link to patient as well)
             $appointment->payment()->create([
+                'patient_id' => $validatedData['patient_id'] ?? $appointment->patient_id,
                 'amount' => $validatedData['amount_paid'] ?? 0,
-                'payment_date' => now(),
                 'payment_method' => 'cash',
-                'status' => 'completed',
+                'status' => 'paid',
             ]);
 
             Log::info('Payment record created successfully');
